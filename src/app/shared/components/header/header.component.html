@@ -1,0 +1,27 @@
+<header class="header">
+  <div class="container header__content">
+    <a class="brand" routerLink="/" aria-label="Ir para a página inicial da IA Colecction" (click)="closeMenu()">
+      <span class="brand__icon">IA</span>
+      <span>
+        <strong>IA Colecction</strong>
+        <small>Urban tech store</small>
+      </span>
+    </a>
+
+    <button class="header__toggle" type="button" aria-label="Abrir menu" (click)="toggleMenu()">
+      ☰
+    </button>
+
+    <nav class="nav" [class.nav--open]="menuOpen()" aria-label="Navegação principal">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Home</a>
+      <a routerLink="/produtos" routerLinkActive="active" (click)="closeMenu()">Produtos</a>
+      <a routerLink="/sobre" routerLinkActive="active" (click)="closeMenu()">Sobre</a>
+      <a routerLink="/contato" routerLinkActive="active" (click)="closeMenu()">Contato</a>
+    </nav>
+
+    <a class="cart-link" routerLink="/carrinho" aria-label="Abrir carrinho" (click)="closeMenu()">
+      <span>🛒</span>
+      <strong>{{ cartService.totalItems() }}</strong>
+    </a>
+  </div>
+</header>

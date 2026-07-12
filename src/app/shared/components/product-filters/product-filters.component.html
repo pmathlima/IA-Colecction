@@ -1,0 +1,27 @@
+<section class="filters" aria-label="Filtros de produtos">
+  <app-search-input [value]="filters().termo" (valueChange)="updateTerm($event)" />
+
+  <label>
+    <span>Categoria</span>
+    <select [ngModel]="filters().categoria" (ngModelChange)="updateCategory($event)">
+      <option value="Todas">Todas</option>
+      @for (category of categories(); track category) {
+        <option [value]="category">{{ category }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    <span>Preço até {{ filters().precoMaximo | brlCurrency }}</span>
+    <input
+      type="range"
+      min="0"
+      [max]="highestPrice()"
+      step="10"
+      [ngModel]="filters().precoMaximo"
+      (ngModelChange)="updatePrice(+$event)"
+    />
+  </label>
+
+  <button type="button" (click)="resetFilters()">Limpar filtros</button>
+</section>

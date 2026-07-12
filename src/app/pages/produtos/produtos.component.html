@@ -1,0 +1,27 @@
+<section class="page container">
+  <header class="page-header">
+    <span>Catálogo</span>
+    <h1>Produtos IA Colecction</h1>
+    <p>Pesquise, filtre por categoria e encontre peças modernas para compor seu visual.</p>
+  </header>
+
+  <app-product-filters
+    [filters]="filters()"
+    [categories]="productService.categories()"
+    [highestPrice]="productService.highestPrice()"
+    (filtersChange)="updateFilters($event)"
+  />
+
+  @if (filteredProducts().length > 0) {
+    <div class="products-grid">
+      @for (product of filteredProducts(); track product.id) {
+        <app-product-card [product]="product" />
+      }
+    </div>
+  } @else {
+    <div class="empty-state glass-card">
+      <h2>Nenhum produto encontrado</h2>
+      <p>Altere os filtros ou busque por outro nome.</p>
+    </div>
+  }
+</section>

@@ -1,0 +1,38 @@
+<section class="page container">
+  @if (product(); as product) {
+    <a routerLink="/produtos" class="back-link">← Voltar para produtos</a>
+
+    <div class="detail-grid">
+      <div class="detail-image glass-card">
+        <img [src]="product.imagem" [alt]="product.nome" />
+      </div>
+
+      <article class="detail-info glass-card">
+        <app-category-badge [category]="product.categoria" />
+        <h1>{{ product.nome }}</h1>
+        <p>{{ product.descricao }}</p>
+
+        <div class="price">{{ product.preco | brlCurrency }}</div>
+
+        <div class="stock" [class.stock--low]="product.estoque <= 8">
+          @if (product.estoque > 0) {
+            <span>Disponível em estoque</span>
+            <strong>{{ product.estoque }} unidades</strong>
+          } @else {
+            <span>Produto indisponível</span>
+          }
+        </div>
+
+        <app-ui-button [disabled]="product.estoque === 0" (click)="addToCart()">
+          Adicionar ao carrinho
+        </app-ui-button>
+      </article>
+    </div>
+  } @else {
+    <div class="empty-state glass-card">
+      <h1>Produto não encontrado</h1>
+      <p>O produto selecionado não existe ou foi removido.</p>
+      <app-ui-button routerLink="/produtos">Voltar para catálogo</app-ui-button>
+    </div>
+  }
+</section>

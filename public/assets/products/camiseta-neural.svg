@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-label="Neural Black">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.55" stop-color="#111827"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="item" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="1" stop-color="#23263a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="30" stdDeviation="28" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="900" height="700" fill="url(#bg)"/>
+  <circle cx="140" cy="130" r="90" fill="#fff" opacity="0.05"/>
+  <circle cx="780" cy="560" r="130" fill="#fff" opacity="0.06"/>
+  <path d="M60 570 C240 460 310 660 500 540 S710 380 850 500" fill="none" stroke="#fff" stroke-width="4" opacity="0.11"/>
+  <g filter="url(#shadow)">
+  <path d="M330 190 L390 140 H510 L570 190 L680 250 L625 350 L565 318 V505 C565 535 545 555 515 555 H385 C355 555 335 535 335 505 V318 L275 350 L220 250 Z" fill="url(#item)"/>
+  <path d="M390 140 C405 185 495 185 510 140" fill="none" stroke="#fff" stroke-width="14" opacity="0.45"/>
+  <text x="450" y="370" text-anchor="middle" font-family="Arial" font-size="76" font-weight="900" fill="#ffffff" opacity="0.82">IA</text>
+</g>
+  <text x="450" y="610" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="900" fill="#fff">Neural Black</text>
+  <text x="450" y="650" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="5" fill="#cbd5e1">IA COLECCTION</text>
+</svg>

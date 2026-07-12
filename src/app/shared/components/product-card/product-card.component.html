@@ -1,0 +1,24 @@
+<article class="product-card">
+  <a [routerLink]="['/produtos', product().id]" class="product-card__image" aria-label="Ver detalhes do produto">
+    <img [src]="product().imagem" [alt]="product().nome" loading="lazy" />
+  </a>
+
+  <div class="product-card__body">
+    <app-category-badge [category]="product().categoria" />
+
+    <div>
+      <h3>{{ product().nome }}</h3>
+      <p>{{ product().descricao }}</p>
+    </div>
+
+    <div class="product-card__meta">
+      <strong>{{ product().preco | brlCurrency }}</strong>
+      <span>{{ product().estoque }} em estoque</span>
+    </div>
+
+    <div class="product-card__actions">
+      <a [routerLink]="['/produtos', product().id]" class="details-link">Ver detalhes</a>
+      <app-ui-button (click)="addToCart()">Adicionar</app-ui-button>
+    </div>
+  </div>
+</article>

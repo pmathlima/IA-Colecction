@@ -1,0 +1,6 @@
+@if (feedbackService.message(); as message) {
+  <div class="feedback" [class]="'feedback feedback--' + message.type" role="status" aria-live="polite">
+    <span>{{ message.text }}</span>
+    <button type="button" aria-label="Fechar mensagem" (click)="feedbackService.clear()">×</button>
+  </div>
+}

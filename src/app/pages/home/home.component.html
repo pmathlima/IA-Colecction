@@ -1,0 +1,71 @@
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__content">
+      <span class="hero__eyebrow">Nova coleção disponível</span>
+      <h1>Moda online com tecnologia, estilo e presença premium.</h1>
+      <p>
+        A IA Colecction une peças urbanas, acabamento sofisticado e experiência de compra simples para quem valoriza identidade, conforto e inovação.
+      </p>
+      <div class="hero__actions">
+        <app-ui-button routerLink="/produtos">Conhecer produtos</app-ui-button>
+        <app-ui-button variant="ghost" routerLink="/sobre">Sobre a marca</app-ui-button>
+      </div>
+      <div class="hero__stats">
+        <div><strong>8+</strong><span>produtos iniciais</span></div>
+        <div><strong>100%</strong><span>layout responsivo</span></div>
+        <div><strong>Premium</strong><span>identidade visual</span></div>
+      </div>
+    </div>
+
+    <div class="hero__visual glass-card" aria-label="Produto em destaque IA Colecction">
+      <img src="assets/products/jaqueta-launch.svg" alt="Jaqueta Launch Edition" />
+      <div>
+        <span>Launch Edition</span>
+        <strong>Design futurista para looks urbanos.</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container section">
+  <div class="section__header">
+    <div>
+      <span>Categorias</span>
+      <h2>Escolha seu estilo</h2>
+    </div>
+    <a routerLink="/produtos">Ver catálogo completo</a>
+  </div>
+
+  <div class="category-grid">
+    @for (category of productService.categories(); track category) {
+      <a routerLink="/produtos" class="category-card">
+        <strong>{{ category }}</strong>
+        <span>Explorar coleção</span>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="container section">
+  <div class="section__header">
+    <div>
+      <span>Destaques</span>
+      <h2>Produtos em promoção e lançamento</h2>
+    </div>
+  </div>
+
+  <div class="products-grid">
+    @for (product of productService.featuredProducts(); track product.id) {
+      <app-product-card [product]="product" />
+    }
+  </div>
+</section>
+
+<section class="container cta glass-card">
+  <div>
+    <span>IA Colecction</span>
+    <h2>Pronto para montar um visual moderno?</h2>
+    <p>Explore camisetas, moletons, acessórios e calçados com uma experiência rápida e intuitiva.</p>
+  </div>
+  <app-ui-button variant="secondary" routerLink="/produtos">Ir para loja</app-ui-button>
+</section>

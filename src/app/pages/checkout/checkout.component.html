@@ -1,0 +1,80 @@
+<section class="page container">
+  <header class="page-header">
+    <span>Checkout</span>
+    <h1>Finalizar compra</h1>
+    <p>Preencha seus dados para simular a finalização do pedido na IA Colecction.</p>
+  </header>
+
+  @if (cartService.items().length > 0) {
+    <div class="checkout-layout">
+      <form class="checkout-form glass-card" [formGroup]="checkoutForm" (ngSubmit)="submit()">
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="nome">Nome completo</label>
+            <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Matheus Lima" />
+            @if (hasError('nome')) {
+              <small>Informe seu nome completo.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" formControlName="email" placeholder="seuemail@exemplo.com" />
+            @if (hasError('email')) {
+              <small>Informe um e-mail válido.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="telefone">Telefone</label>
+            <input id="telefone" type="tel" formControlName="telefone" placeholder="(91) 99999-9999" />
+            @if (hasError('telefone')) {
+              <small>Informe um telefone válido.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="endereco">Endereço</label>
+            <textarea id="endereco" formControlName="endereco" placeholder="Rua, número, bairro, cidade e estado"></textarea>
+            @if (hasError('endereco')) {
+              <small>Informe um endereço válido.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="formaPagamento">Forma de pagamento</label>
+            <select id="formaPagamento" formControlName="formaPagamento">
+              <option value="Pix">Pix</option>
+              <option value="Cartão de Crédito">Cartão de Crédito</option>
+              <option value="Boleto Simulado">Boleto Simulado</option>
+            </select>
+          </div>
+        </div>
+
+        <app-ui-button type="submit" variant="secondary" [full]="true" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Confirmando pedido...' : 'Confirmar compra' }}
+        </app-ui-button>
+      </form>
+
+      <aside class="order-summary glass-card">
+        <span>Resumo</span>
+        @for (item of cartService.items(); track item.produto.id) {
+          <div class="summary-item">
+            <strong>{{ item.produto.nome }}</strong>
+            <small>{{ item.quantidade }} × {{ item.produto.preco | brlCurrency }}</small>
+          </div>
+        }
+        <div class="total">
+          <span>Total</span>
+          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <div class="empty-state glass-card">
+      <h2>Nenhum produto no carrinho</h2>
+      <p>Escolha produtos antes de continuar para o checkout.</p>
+      <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+    </div>
+  }
+</section>

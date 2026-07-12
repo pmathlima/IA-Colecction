@@ -1,0 +1,18 @@
+<aside class="summary glass-card" aria-label="Resumo do carrinho">
+  <span>Resumo do pedido</span>
+  <h2>{{ total() | brlCurrency }}</h2>
+  <p>{{ totalItems() }} item(ns) no carrinho</p>
+
+  <div class="summary__line">
+    <strong>Subtotal</strong>
+    <strong>{{ total() | brlCurrency }}</strong>
+  </div>
+  <div class="summary__line">
+    <span>Frete</span>
+    <span>Calculado no checkout</span>
+  </div>
+
+  <app-ui-button variant="secondary" [full]="true" [disabled]="disabled()" routerLink="/checkout">
+    Finalizar pedido
+  </app-ui-button>
+</aside>

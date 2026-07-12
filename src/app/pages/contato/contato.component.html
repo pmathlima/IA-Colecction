@@ -1,0 +1,51 @@
+<section class="page container">
+  <header class="page-header">
+    <span>Contato</span>
+    <h1>Fale com a IA Colecction</h1>
+    <p>Envie uma mensagem, tire dúvidas sobre produtos ou simule um atendimento para apresentação do projeto.</p>
+  </header>
+
+  <div class="contact-layout">
+    <form class="contact-form glass-card" [formGroup]="contactForm" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="nome">Nome</label>
+          <input id="nome" type="text" formControlName="nome" placeholder="Seu nome" />
+          @if (hasError('nome')) {
+            <small>Informe seu nome.</small>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" formControlName="email" placeholder="seuemail@exemplo.com" />
+          @if (hasError('email')) {
+            <small>Informe um e-mail válido.</small>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" formControlName="mensagem" placeholder="Como podemos ajudar?"></textarea>
+          @if (hasError('mensagem')) {
+            <small>Digite uma mensagem com pelo menos 10 caracteres.</small>
+          }
+        </div>
+      </div>
+
+      <app-ui-button type="submit">Enviar mensagem</app-ui-button>
+    </form>
+
+    <aside class="contact-info glass-card">
+      <h2>Atendimento</h2>
+      <p><strong>WhatsApp:</strong> (91) 99999-0000</p>
+      <p><strong>E-mail:</strong> contato&#64;iacolecction.com</p>
+      <p><strong>Instagram:</strong> &#64;iacolecction</p>
+      <p><strong>Localização:</strong> Belém - PA, Brasil</p>
+      <div class="info-box">
+        <span>Horário</span>
+        <strong>Segunda a sexta, 9h às 18h</strong>
+      </div>
+    </aside>
+  </div>
+</section>

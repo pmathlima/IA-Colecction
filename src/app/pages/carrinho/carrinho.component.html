@@ -1,0 +1,57 @@
+<section class="page container">
+  <header class="page-header">
+    <span>Carrinho</span>
+    <h1>Seu pedido</h1>
+    <p>Revise os itens selecionados, altere quantidades e avance para o checkout simulado.</p>
+  </header>
+
+  @if (cartService.items().length > 0) {
+    <div class="cart-layout">
+      <div class="cart-list">
+        @for (item of cartService.items(); track item.produto.id) {
+          <article class="cart-item glass-card">
+            <img [src]="item.produto.imagem" [alt]="item.produto.nome" />
+
+            <div class="cart-item__info">
+              <span>{{ item.produto.categoria }}</span>
+              <h2>{{ item.produto.nome }}</h2>
+              <p>{{ item.produto.preco | brlCurrency }} cada</p>
+            </div>
+
+            <label class="quantity">
+              <span>Quantidade</span>
+              <input
+                type="number"
+                min="1"
+                [max]="item.produto.estoque"
+                [value]="item.quantidade"
+                (change)="updateQuantity(item.produto.id, +$any($event.target).value)"
+              />
+            </label>
+
+            <div class="subtotal">
+              <span>Subtotal</span>
+              <strong>{{ cartService.getSubtotal(item) | brlCurrency }}</strong>
+            </div>
+
+            <app-ui-button variant="danger" (click)="removeItem(item.produto.id, item.produto.nome)">
+              Remover
+            </app-ui-button>
+          </article>
+        }
+      </div>
+
+      <app-cart-summary
+        [total]="cartService.totalPrice()"
+        [totalItems]="cartService.totalItems()"
+        [disabled]="cartService.isEmpty()"
+      />
+    </div>
+  } @else {
+    <div class="empty-state glass-card">
+      <h2>Seu carrinho está vazio</h2>
+      <p>Adicione produtos ao carrinho para continuar a compra.</p>
+      <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+    </div>
+  }
+</section>

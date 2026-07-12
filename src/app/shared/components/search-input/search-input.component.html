@@ -1,0 +1,10 @@
+<label class="search">
+  <span>🔎</span>
+  <input
+    type="search"
+    [ngModel]="value()"
+    (ngModelChange)="valueChange.emit($event)"
+    [placeholder]="placeholder()"
+    aria-label="Buscar produto"
+  />
+</label>

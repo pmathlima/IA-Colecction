@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.angular/
+.env
+*.log
+backend/.venv/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/routers/__pycache__/
+backend/ia_colecction.db

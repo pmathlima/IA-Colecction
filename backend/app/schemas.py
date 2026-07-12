@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+from datetime import datetime
+from decimal import Decimal
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+PaymentMethod = Literal["Pix", "Cartão de Crédito", "Boleto Simulado"]
+
+
+class ProductResponse(BaseModel):
+    id: int
+    nome: str
+    descricao: str
+    preco: float
+    categoria: str
+    imagem: str
+    estoque: int
+    destaque: bool
+    dataCriacao: str
+
+
+class CustomerData(BaseModel):
+    nome: str = Field(min_length=3, max_length=120)
+    email: EmailStr
+    telefone: str = Field(min_length=10, max_length=40)
+    endereco: str = Field(min_length=8)
+    formaPagamento: PaymentMethod
+
+
+class OrderItemCreate(BaseModel):
+    produtoId: int = Field(gt=0)
+    quantidade: int = Field(gt=0)
+
+
+class OrderCreate(BaseModel):
+    cliente: CustomerData
+    itens: list[OrderItemCreate] = Field(min_length=1)
+
+
+class OrderItemResponse(BaseModel):
+    produtoId: int
+    nome: str
+    precoUnitario: float
+    quantidade: int
+    subtotal: float
+
+
+class OrderResponse(BaseModel):
+    id: str
+    cliente: CustomerData
+    itens: list[OrderItemResponse]
+    total: float
+    status: str
+    criadoEm: str
+
+
+class ContactCreate(BaseModel):
+    nome: str = Field(min_length=3, max_length=120)
+    email: EmailStr
+    mensagem: str = Field(min_length=10)
+
+
+class ContactResponse(BaseModel):
+    id: int
+    nome: str
+    email: EmailStr
+    mensagem: str
+    status: str
+    criadoEm: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+def product_to_response(product) -> ProductResponse:
+    return ProductResponse(
+        id=product.id,
+        nome=product.nome,
+        descricao=product.descricao,
+        preco=float(product.preco),
+        categoria=product.categoria,
+        imagem=product.imagem,
+        estoque=product.estoque,
+        destaque=product.destaque,
+        dataCriacao=product.data_criacao.isoformat(),
+    )
+
+
+def order_to_response(order) -> OrderResponse:
+    return OrderResponse(
+        id=order.id,
+        cliente=CustomerData(
+            nome=order.cliente_nome,
+            email=order.cliente_email,
+            telefone=order.cliente_telefone,
+            endereco=order.cliente_endereco,
+            formaPagamento=order.forma_pagamento,
+        ),
+        itens=[
+            OrderItemResponse(
+                produtoId=item.product_id,
+                nome=item.product_name,
+                precoUnitario=float(item.unit_price),
+                quantidade=item.quantity,
+                subtotal=float(item.subtotal),
+            )
+            for item in order.items
+        ],
+        total=float(order.total),
+        status=order.status,
+        criadoEm=order.criado_em.isoformat(),
+    )

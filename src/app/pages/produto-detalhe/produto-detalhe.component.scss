@@ -1,0 +1,81 @@
+.back-link {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  color: var(--color-secondary);
+  font-weight: 900;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.detail-image {
+  overflow: hidden;
+  padding: 1rem;
+
+  img {
+    width: 100%;
+    border-radius: var(--radius-md);
+  }
+}
+
+.detail-info {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.75;
+  }
+}
+
+.price {
+  color: var(--color-gold);
+  font-size: 2.1rem;
+  font-weight: 900;
+}
+
+.stock {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(34, 197, 94, 0.08);
+  padding: 1rem;
+
+  span {
+    color: var(--color-text-muted);
+  }
+
+  strong {
+    color: #86efac;
+  }
+}
+
+.stock--low {
+  border-color: rgba(248, 201, 92, 0.4);
+  background: rgba(248, 201, 92, 0.08);
+
+  strong {
+    color: #fde68a;
+  }
+}
+
+@media (max-width: 860px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
