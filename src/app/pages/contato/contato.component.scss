@@ -21,6 +21,7 @@
 
   h2 {
     margin: 0;
+    color: var(--color-primary-strong);
   }
 
   p {
@@ -38,13 +39,13 @@
   display: grid;
   gap: 0.35rem;
   margin-top: 0.8rem;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  border: 1px solid rgba(120, 14, 45, 0.24);
   border-radius: var(--radius-md);
-  background: rgba(56, 189, 248, 0.08);
+  background: rgba(120, 14, 45, 0.07);
   padding: 1rem;
 
   span {
-    color: var(--color-secondary);
+    color: var(--color-primary);
     font-weight: 900;
   }
 }

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-label="Vestido Flora Lançamento">
+  <defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#fffaf1"/>
+    <stop offset="100%" stop-color="#f4dfc8"/>
+  </linearGradient>
+  <linearGradient id="wine" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#9a2044"/>
+    <stop offset="100%" stop-color="#5c0820"/>
+  </linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#f1d39a"/>
+    <stop offset="100%" stop-color="#b9803e"/>
+  </linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#5c0820" flood-opacity="0.18"/>
+  </filter>
+</defs>
+  <rect width="900" height="700" rx="44" fill="url(#bg)"/>
+  <circle cx="760" cy="120" r="150" fill="#780e2d" opacity="0.08"/>
+  <circle cx="150" cy="610" r="180" fill="#d4a64f" opacity="0.13"/>
+  <path d="M92 122 C220 42 337 44 448 116 C560 190 665 165 800 88" fill="none" stroke="#780e2d" opacity="0.08" stroke-width="26"/>
+  
+  <g filter="url(#shadow)">
+    <path d="M390 125 C420 100 480 100 510 125 L540 190 L500 214 L486 178 L555 540 C505 575 395 575 345 540 L414 178 L400 214 L360 190 Z" fill="#fff2df" stroke="#780e2d" stroke-width="7"/>
+    <path d="M410 130 C425 166 475 166 490 130" fill="none" stroke="#b9803e" stroke-width="8" stroke-linecap="round"/>
+    <g fill="#780e2d" opacity="0.9">
+      <circle cx="425" cy="275" r="10"/><circle cx="455" cy="325" r="8"/><circle cx="480" cy="270" r="9"/><circle cx="430" cy="430" r="8"/><circle cx="490" cy="460" r="10"/>
+    </g>
+    <g fill="#d4a64f" opacity="0.9">
+      <circle cx="438" cy="288" r="5"/><circle cx="467" cy="336" r="4"/><circle cx="492" cy="282" r="5"/><circle cx="442" cy="442" r="4"/><circle cx="502" cy="472" r="5"/>
+    </g>
+  </g>
+
+  <text x="450" y="640" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-weight="700" fill="#5c0820">IA Collection</text>
+</svg>

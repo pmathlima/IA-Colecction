@@ -11,8 +11,8 @@ from .seed import init_db
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 
 app = FastAPI(
-    title="IA Colecction API",
-    description="API backend da loja online IA Colecction, com produtos, pedidos e contato.",
+    title="IA Collection API",
+    description="API backend da loja online de moda feminina IA Collection, com produtos, pedidos e contato.",
     version="1.0.0",
 )
 
@@ -32,7 +32,7 @@ def on_startup() -> None:
 
 @app.get("/api/health", tags=["Saúde"])
 def health_check():
-    return {"status": "online", "service": "IA Colecction API"}
+    return {"status": "online", "service": "IA Collection API"}
 
 
 app.include_router(products.router, prefix="/api")

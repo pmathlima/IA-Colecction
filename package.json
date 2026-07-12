@@ -1,7 +1,7 @@
 {
-  "name": "ia-colecction",
+  "name": "ia-collection",
   "version": "1.0.0",
-  "description": "Loja online moderna IA Colecction feita em Angular standalone, TypeScript e SCSS.",
+  "description": "Loja online fullstack de moda feminina IA Collection feita em Angular, TypeScript, SCSS e FastAPI.",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

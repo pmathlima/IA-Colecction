@@ -1,11 +1,11 @@
-# Backend — IA Colecction API
+# Backend — IA Collection API
 
-Backend real da loja **IA Colecction**, desenvolvido com FastAPI, SQLite e SQLAlchemy.
+Backend real da loja **IA Collection**, desenvolvido com FastAPI, SQLite e SQLAlchemy para atender uma loja online de moda feminina.
 
 ## Recursos
 
 - API REST de produtos.
-- Cadastro inicial automático de 8 produtos.
+- Cadastro inicial automático de 8 produtos femininos.
 - Banco de dados SQLite local.
 - Criação de pedidos com validação de estoque.
 - Atualização automática do estoque após compra.
@@ -76,7 +76,7 @@ GET    /api/contact
 O banco SQLite é criado automaticamente no primeiro start da API:
 
 ```txt
-backend/ia_colecction.db
+backend/ia_collection.db
 ```
 
-Para recriar os dados do zero, apague o arquivo `ia_colecction.db` e rode novamente a API.
+Para recriar os dados do zero, apague o arquivo `ia_collection.db` e rode novamente a API.

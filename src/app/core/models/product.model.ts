@@ -1,8 +1,10 @@
 export type ProductCategory =
-  | 'Camisetas'
-  | 'Moletons'
-  | 'Acessórios'
+  | 'Vestidos'
+  | 'Blusas'
+  | 'Conjuntos'
+  | 'Saias'
   | 'Calçados'
+  | 'Acessórios'
   | 'Lançamentos'
   | 'Promoções';
 

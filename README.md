@@ -1,8 +1,8 @@
-# IA Colecction — Loja Online Fullstack
+# IA Collection — Loja Online Fullstack
 
-Projeto fullstack de e-commerce para a marca **IA Colecction**, desenvolvido com **Angular**, **TypeScript**, **SCSS**, **FastAPI**, **SQLite** e **SQLAlchemy**.
+Projeto fullstack de e-commerce para a marca **IA Collection**, uma loja online de **moda feminina** com identidade visual elegante, delicada e sofisticada. O projeto foi desenvolvido com **Angular**, **TypeScript**, **SCSS**, **FastAPI**, **SQLite** e **SQLAlchemy**.
 
-A aplicação possui uma interface moderna, responsiva e profissional para venda de roupas e acessórios.
+A aplicação possui uma interface responsiva e profissional para venda de roupas, calçados e acessórios femininos. A identidade visual usa tons de **marfim**, **vinho**, **branco** e **dourado suave**, seguindo a logo da marca e transmitindo confiança, feminilidade e aparência premium.
 
 ## O que o projeto possui
 
@@ -17,18 +17,31 @@ A aplicação possui uma interface moderna, responsiva e profissional para venda
 - Página Contato integrada com a API.
 - Componentes reutilizáveis: header, footer, card de produto, botão padrão, filtros, busca, badge, resumo do carrinho e feedback.
 - Layout responsivo para desktop, tablet e celular.
+- Logo da IA Collection aplicada no projeto.
+- Produtos femininos simulados com imagens SVG locais.
 
 ### Backend
 
 - API REST com FastAPI.
 - Banco de dados SQLite.
-- Cadastro inicial automático de produtos.
+- Cadastro inicial automático de produtos femininos.
 - Endpoints para produtos, pedidos e contato.
 - Validação de estoque ao finalizar pedido.
 - Atualização automática do estoque após compra.
 - Armazenamento de pedidos no banco.
 - Armazenamento de mensagens de contato.
 - Documentação automática da API em `/docs`.
+
+## Tecnologias utilizadas
+
+- Angular
+- TypeScript
+- SCSS
+- FastAPI
+- Python
+- SQLite
+- SQLAlchemy
+- Pydantic
 
 ## Como rodar o projeto completo
 
@@ -90,7 +103,7 @@ http://localhost:4200
 ## Estrutura principal
 
 ```txt
-ia-colecction-angular/
+ia-collection-angular/
 ├── backend/
 │   ├── app/
 │   │   ├── routers/
@@ -128,6 +141,17 @@ ia-colecction-angular/
 └── package.json
 ```
 
+## Categorias de produtos
+
+- Vestidos
+- Blusas
+- Conjuntos
+- Saias
+- Calçados
+- Acessórios
+- Lançamentos
+- Promoções
+
 ## Endpoints principais da API
 
 ```txt
@@ -147,3 +171,4 @@ GET    /api/contact
 - O frontend busca os produtos pela API em `http://localhost:8000/api/products`.
 - Caso a API esteja desligada, o frontend mantém uma lista local de demonstração como fallback para não quebrar a apresentação.
 - O banco SQLite é criado automaticamente dentro da pasta `backend` no primeiro start da API.
+- Para recriar os produtos do zero, apague o arquivo `backend/ia_collection.db` e rode novamente o backend.

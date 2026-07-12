@@ -22,7 +22,7 @@
   gap: 1rem;
 
   > span {
-    color: var(--color-secondary);
+    color: var(--color-primary);
     font-size: 0.8rem;
     font-weight: 900;
     text-transform: uppercase;
@@ -36,6 +36,10 @@
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.8rem;
 
+  strong {
+    color: var(--color-primary-strong);
+  }
+
   small {
     color: var(--color-text-muted);
   }
@@ -48,7 +52,7 @@
   align-items: center;
 
   strong {
-    color: var(--color-gold);
+    color: var(--color-primary);
     font-size: 1.5rem;
   }
 }

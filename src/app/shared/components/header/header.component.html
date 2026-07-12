@@ -1,10 +1,10 @@
 <header class="header">
   <div class="container header__content">
-    <a class="brand" routerLink="/" aria-label="Ir para a página inicial da IA Colecction" (click)="closeMenu()">
-      <span class="brand__icon">IA</span>
+    <a class="brand" routerLink="/" aria-label="Ir para a página inicial da IA Collection" (click)="closeMenu()">
+      <img class="brand__logo" src="assets/logo-ia-mark.png" alt="Logo IA Collection" />
       <span>
-        <strong>IA Colecction</strong>
-        <small>Urban tech store</small>
+        <strong>IA Collection</strong>
+        <small>Moda feminina</small>
       </span>
     </a>
 
@@ -20,7 +20,7 @@
     </nav>
 
     <a class="cart-link" routerLink="/carrinho" aria-label="Abrir carrinho" (click)="closeMenu()">
-      <span>🛒</span>
+      <span>🛍️</span>
       <strong>{{ cartService.totalItems() }}</strong>
     </a>
   </div>
