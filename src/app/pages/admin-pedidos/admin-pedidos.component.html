@@ -1,0 +1,87 @@
+<section class="admin-page container">
+  <header class="admin-hero glass-card">
+    <div>
+      <span>Painel administrativo</span>
+      <h1>Pedidos da IA Collection</h1>
+      <p>Acompanhe os pedidos recebidos, veja dados das clientes, valores e o status de cada compra.</p>
+    </div>
+
+    <div class="admin-hero__actions">
+      <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/produtos" variant="ghost">Produtos</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  <div class="admin-metrics">
+    <article class="glass-card">
+      <span>Total de pedidos</span>
+      <strong>{{ totalOrders() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Pedidos pendentes</span>
+      <strong>{{ pendingOrders() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Receita registrada</span>
+      <strong>{{ revenue() | brlCurrency }}</strong>
+    </article>
+  </div>
+
+  <section class="admin-table glass-card">
+    <div class="admin-table__header">
+      <div>
+        <span>Operação</span>
+        <h2>Lista de pedidos</h2>
+      </div>
+      <app-ui-button variant="ghost" type="button" (click)="loadOrders()">Atualizar</app-ui-button>
+    </div>
+
+    @if (isLoading()) {
+      <p class="empty-state">Carregando pedidos...</p>
+    } @else if (!orders().length) {
+      <p class="empty-state">Nenhum pedido recebido ainda.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Data</th>
+              <th>Pagamento</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of orders(); track order.id) {
+              <tr>
+                <td>
+                  <strong>{{ order.id }}</strong>
+                  <small>{{ order.itens.length }} item(ns)</small>
+                </td>
+                <td>
+                  <strong>{{ order.cliente.nome }}</strong>
+                  <small>{{ order.cliente.telefone }}</small>
+                </td>
+                <td>{{ order.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ order.cliente.formaPagamento }}</td>
+                <td>{{ order.total | brlCurrency }}</td>
+                <td>
+                  <span class="status {{ statusClass(order.status) }}">
+                    {{ statusLabel(order.status) }}
+                  </span>
+                </td>
+                <td>
+                  <a class="details-link" [routerLink]="['/admin/pedidos', order.id]">Ver detalhes</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>

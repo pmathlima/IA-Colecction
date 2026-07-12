@@ -7,6 +7,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 PaymentMethod = Literal["Pix", "Cartão de Crédito", "Boleto Simulado"]
+OrderStatus = Literal["NOVO", "EM_ANALISE", "PAGO", "ENVIADO", "FINALIZADO", "CANCELADO"]
 
 
 class AdminLoginRequest(BaseModel):
@@ -90,6 +91,10 @@ class OrderResponse(BaseModel):
     total: float
     status: str
     criadoEm: str
+
+
+class OrderStatusUpdate(BaseModel):
+    status: OrderStatus
 
 
 class ContactCreate(BaseModel):

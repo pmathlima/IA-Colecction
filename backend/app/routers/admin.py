@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..auth import ADMIN_ACCESS_TOKEN, require_admin, validate_admin_credentials
 from ..database import get_db
-from ..models import Product
+from ..models import Order, Product
 from ..schemas import (
     AdminInfo,
     AdminLoginRequest,
@@ -14,6 +14,9 @@ from ..schemas import (
     ProductCreate,
     ProductResponse,
     ProductUpdate,
+    OrderResponse,
+    OrderStatusUpdate,
+    order_to_response,
     product_to_response,
 )
 
@@ -104,3 +107,33 @@ def admin_delete_product(product_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_409_CONFLICT,
             detail="Não foi possível remover o produto porque ele pode estar vinculado a um pedido.",
         ) from exc
+
+@router.get("/orders", response_model=list[OrderResponse], dependencies=[Depends(require_admin)])
+def admin_list_orders(db: Session = Depends(get_db)):
+    orders = db.query(Order).options(joinedload(Order.items)).order_by(Order.criado_em.desc()).all()
+    return [order_to_response(order) for order in orders]
+
+
+@router.get("/orders/{order_id}", response_model=OrderResponse, dependencies=[Depends(require_admin)])
+def admin_get_order(order_id: str, db: Session = Depends(get_db)):
+    order = db.query(Order).options(joinedload(Order.items)).filter(Order.id == order_id).first()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+
+    return order_to_response(order)
+
+
+@router.patch("/orders/{order_id}/status", response_model=OrderResponse, dependencies=[Depends(require_admin)])
+def admin_update_order_status(order_id: str, payload: OrderStatusUpdate, db: Session = Depends(get_db)):
+    order = db.query(Order).options(joinedload(Order.items)).filter(Order.id == order_id).first()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+
+    order.status = payload.status
+    db.commit()
+    db.refresh(order)
+
+    return order_to_response(order)
+

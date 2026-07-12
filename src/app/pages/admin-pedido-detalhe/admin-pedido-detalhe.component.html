@@ -1,0 +1,92 @@
+<section class="admin-page container">
+  <header class="admin-hero glass-card">
+    <div>
+      <span>Painel administrativo</span>
+      <h1>Detalhes do pedido</h1>
+      <p>Visualize os dados da cliente, os produtos comprados e atualize o andamento do pedido.</p>
+    </div>
+
+    <div class="admin-hero__actions">
+      <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/pedidos" variant="ghost">Voltar aos pedidos</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="glass-card loading-state">Carregando pedido...</div>
+  } @else if (order(); as currentOrder) {
+    <section class="order-grid">
+      <article class="order-card glass-card order-card--main">
+        <div class="card-header">
+          <div>
+            <span>Pedido</span>
+            <h2>{{ currentOrder.id }}</h2>
+            <small>{{ currentOrder.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <span class="status {{ statusClass(currentOrder.status) }}">
+            {{ statusLabel(currentOrder.status) }}
+          </span>
+        </div>
+
+        <div class="status-control">
+          <label for="status">Atualizar status</label>
+          <select
+            id="status"
+            [value]="currentOrder.status"
+            [disabled]="isUpdating()"
+            (change)="updateStatus(asOrderStatus($any($event.target).value))"
+          >
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </div>
+      </article>
+
+      <article class="order-card glass-card">
+        <span>Cliente</span>
+        <h2>{{ currentOrder.cliente.nome }}</h2>
+        <div class="info-list">
+          <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
+          <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
+          <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
+          <p><strong>Pagamento:</strong> {{ currentOrder.cliente.formaPagamento }}</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="items-card glass-card">
+      <div class="card-header">
+        <div>
+          <span>Produtos</span>
+          <h2>Itens do pedido</h2>
+        </div>
+        <strong>{{ currentOrder.total | brlCurrency }}</strong>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Preço unitário</th>
+              <th>Quantidade</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of currentOrder.itens; track item.produtoId) {
+              <tr>
+                <td>{{ item.nome }}</td>
+                <td>{{ item.precoUnitario | brlCurrency }}</td>
+                <td>{{ item.quantidade }}</td>
+                <td>{{ item.subtotal | brlCurrency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>

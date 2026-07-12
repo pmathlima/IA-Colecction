@@ -1,4 +1,25 @@
 export type PaymentMethod = 'Pix' | 'Cartão de Crédito' | 'Boleto Simulado';
+export type OrderStatus = 'NOVO' | 'EM_ANALISE' | 'PAGO' | 'ENVIADO' | 'FINALIZADO' | 'CANCELADO' | 'CONFIRMADO';
+
+export const ORDER_STATUS_OPTIONS: OrderStatus[] = [
+  'NOVO',
+  'EM_ANALISE',
+  'PAGO',
+  'ENVIADO',
+  'FINALIZADO',
+  'CANCELADO',
+];
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  NOVO: 'Novo',
+  EM_ANALISE: 'Em análise',
+  PAGO: 'Pago',
+  ENVIADO: 'Enviado',
+  FINALIZADO: 'Finalizado',
+  CANCELADO: 'Cancelado',
+  CONFIRMADO: 'Confirmado',
+};
+
 
 export interface CustomerData {
   nome: string;
@@ -21,6 +42,6 @@ export interface Order {
   cliente: CustomerData;
   itens: OrderItemResponse[];
   total: number;
-  status: string;
+  status: OrderStatus;
   criadoEm: string;
 }

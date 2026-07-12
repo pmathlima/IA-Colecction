@@ -29,6 +29,7 @@ A aplicação possui uma interface responsiva e profissional para venda de roupa
 - Validação de estoque ao finalizar pedido.
 - Atualização automática do estoque após compra.
 - Armazenamento de pedidos no banco.
+- Painel administrativo para listar pedidos, visualizar detalhes e alterar status.
 - Armazenamento de mensagens de contato.
 - Documentação automática da API em `/docs`.
 
@@ -159,8 +160,6 @@ GET    /api/health
 GET    /api/products
 GET    /api/products/{id}
 POST   /api/orders
-GET    /api/orders
-GET    /api/orders/{id}
 POST   /api/contact
 GET    /api/contact
 ```
@@ -213,6 +212,46 @@ DELETE /api/admin/products/{id}
 ```
 
 As rotas administrativas de produto exigem o token Bearer retornado no login.
+
+## Painel administrativo de pedidos
+
+Esta versão também inclui acompanhamento administrativo dos pedidos recebidos no checkout.
+
+Rotas do frontend:
+
+```txt
+/admin/pedidos
+/admin/pedidos/:id
+```
+
+Funcionalidades disponíveis:
+
+- Listagem de pedidos recebidos.
+- Visualização dos dados da cliente.
+- Visualização dos itens comprados.
+- Cálculo do total do pedido.
+- Alteração do status do pedido.
+
+Status disponíveis:
+
+```txt
+NOVO
+EM_ANALISE
+PAGO
+ENVIADO
+FINALIZADO
+CANCELADO
+```
+
+Endpoints administrativos da API:
+
+```txt
+GET    /api/admin/orders
+GET    /api/admin/orders/{id}
+PATCH  /api/admin/orders/{id}/status
+```
+
+Essas rotas exigem o token Bearer retornado no login administrativo.
 
 ### Atualizar na VPS
 

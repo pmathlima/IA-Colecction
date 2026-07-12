@@ -4,7 +4,7 @@ from decimal import Decimal
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import Order, OrderItem, Product
@@ -59,28 +59,12 @@ def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
         cliente_endereco=payload.cliente.endereco,
         forma_pagamento=payload.cliente.formaPagamento,
         total=total,
-        status="CONFIRMADO",
+        status="NOVO",
         items=order_items,
     )
 
     db.add(order)
     db.commit()
     db.refresh(order)
-
-    return order_to_response(order)
-
-
-@router.get("", response_model=list[OrderResponse])
-def list_orders(db: Session = Depends(get_db)):
-    orders = db.query(Order).options(joinedload(Order.items)).order_by(Order.criado_em.desc()).all()
-    return [order_to_response(order) for order in orders]
-
-
-@router.get("/{order_id}", response_model=OrderResponse)
-def get_order(order_id: str, db: Session = Depends(get_db)):
-    order = db.query(Order).options(joinedload(Order.items)).filter(Order.id == order_id).first()
-
-    if not order:
-        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
 
     return order_to_response(order)

@@ -65,6 +65,19 @@ export const routes: Routes = [
     title: 'IA Collection | Editar Produto',
   },
   {
+    path: 'admin/pedidos',
+    canActivate: [adminAuthGuard],
+    loadComponent: () => import('./pages/admin-pedidos/admin-pedidos.component').then((m) => m.AdminPedidosComponent),
+    title: 'IA Collection | Admin Pedidos',
+  },
+  {
+    path: 'admin/pedidos/:id',
+    canActivate: [adminAuthGuard],
+    loadComponent: () =>
+      import('./pages/admin-pedido-detalhe/admin-pedido-detalhe.component').then((m) => m.AdminPedidoDetalheComponent),
+    title: 'IA Collection | Detalhes do Pedido',
+  },
+  {
     path: '**',
     redirectTo: '',
   },
