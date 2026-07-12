@@ -2,7 +2,7 @@
 
 Projeto fullstack de e-commerce para a marca **IA Colecction**, desenvolvido com **Angular**, **TypeScript**, **SCSS**, **FastAPI**, **SQLite** e **SQLAlchemy**.
 
-A aplicação possui uma interface moderna, responsiva e profissional para venda de roupas e acessórios, com estrutura inspirada em padrões organizados como o projeto LABES SI, porém totalmente adaptada para uma loja online.
+A aplicação possui uma interface moderna, responsiva e profissional para venda de roupas e acessórios.
 
 ## O que o projeto possui
 
