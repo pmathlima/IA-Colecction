@@ -1,0 +1,56 @@
+<section class="orders-page container">
+  <header class="orders-hero glass-card">
+    <div>
+      <span>Meus pedidos</span>
+      <h1>Acompanhe suas compras</h1>
+      <p>Veja os pedidos vinculados à sua conta e acompanhe o status de cada compra.</p>
+    </div>
+
+    <div class="orders-actions">
+      <app-ui-button routerLink="/produtos">Continuar comprando</app-ui-button>
+      <app-ui-button routerLink="/minha-conta" variant="ghost">Minha conta</app-ui-button>
+    </div>
+  </header>
+
+  <div class="orders-metrics">
+    <article class="glass-card">
+      <span>Total de pedidos</span>
+      <strong>{{ totalOrders() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Valor acumulado</span>
+      <strong>{{ totalValue() | brlCurrency }}</strong>
+    </article>
+  </div>
+
+  <section class="orders-list glass-card">
+    <div class="section-title">
+      <span>Histórico</span>
+      <h2>Pedidos realizados</h2>
+    </div>
+
+    @if (isLoading()) {
+      <p class="empty-state">Carregando pedidos...</p>
+    } @else if (!orders().length) {
+      <div class="empty-state">
+        <h3>Nenhum pedido encontrado</h3>
+        <p>Quando você finalizar uma compra logada, ela aparecerá aqui.</p>
+        <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+      </div>
+    } @else {
+      <div class="order-cards">
+        @for (order of orders(); track order.id) {
+          <article class="order-card">
+            <div>
+              <span class="order-id">{{ order.id }}</span>
+              <strong>{{ order.total | brlCurrency }}</strong>
+              <small>{{ order.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+            <span class="status">{{ statusLabels[order.status] ?? order.status }}</span>
+            <a [routerLink]="['/meus-pedidos', order.id]">Ver detalhes</a>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>

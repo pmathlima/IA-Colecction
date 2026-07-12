@@ -4,8 +4,10 @@ from decimal import Decimal
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
+from ..customer_auth import customer_security, get_optional_customer
 from ..database import get_db
 from ..models import Order, OrderItem, Product
 from ..schemas import OrderCreate, OrderResponse, order_to_response
@@ -14,7 +16,11 @@ router = APIRouter(prefix="/orders", tags=["Pedidos"])
 
 
 @router.post("", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
-def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
+def create_order(
+    payload: OrderCreate,
+    credentials: HTTPAuthorizationCredentials | None = Depends(customer_security),
+    db: Session = Depends(get_db),
+):
     if not payload.itens:
         raise HTTPException(status_code=400, detail="O pedido precisa ter pelo menos um produto.")
 
@@ -51,8 +57,11 @@ def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
             )
         )
 
+    customer = get_optional_customer(credentials, db)
+
     order = Order(
         id=f"IA-{uuid4().hex[:8].upper()}",
+        customer_id=customer.id if customer else None,
         cliente_nome=payload.cliente.nome,
         cliente_email=str(payload.cliente.email),
         cliente_telefone=payload.cliente.telefone,

@@ -1,0 +1,81 @@
+<section class="order-detail-page container">
+  <header class="detail-hero glass-card">
+    <div>
+      <span>Detalhes do pedido</span>
+      <h1>{{ order()?.id ?? 'Pedido' }}</h1>
+      <p>Acompanhe os produtos, dados da compra e status atual do seu pedido.</p>
+    </div>
+
+    <div class="detail-actions">
+      <app-ui-button routerLink="/meus-pedidos" variant="ghost">Voltar</app-ui-button>
+      <app-ui-button routerLink="/produtos">Comprar mais</app-ui-button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="glass-card empty-state">Carregando pedido...</div>
+  } @else if (order(); as currentOrder) {
+    <div class="detail-layout">
+      <section class="glass-card detail-card">
+        <div class="section-title">
+          <span>Compra</span>
+          <h2>Resumo do pedido</h2>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <small>Status</small>
+            <strong>{{ statusLabels[currentOrder.status] ?? currentOrder.status }}</strong>
+          </div>
+          <div>
+            <small>Total</small>
+            <strong>{{ currentOrder.total | brlCurrency }}</strong>
+          </div>
+          <div>
+            <small>Data</small>
+            <strong>{{ currentOrder.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</strong>
+          </div>
+          <div>
+            <small>Pagamento</small>
+            <strong>{{ currentOrder.cliente.formaPagamento }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-card detail-card">
+        <div class="section-title">
+          <span>Produtos</span>
+          <h2>Itens comprados</h2>
+        </div>
+
+        <div class="items-list">
+          @for (item of currentOrder.itens; track item.produtoId) {
+            <article class="item-row">
+              <div>
+                <strong>{{ item.nome }}</strong>
+                <small>{{ item.quantidade }} × {{ item.precoUnitario | brlCurrency }}</small>
+              </div>
+              <span>{{ item.subtotal | brlCurrency }}</span>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="glass-card detail-card">
+        <div class="section-title">
+          <span>Entrega</span>
+          <h2>Dados da cliente</h2>
+        </div>
+
+        <div class="customer-data">
+          <p><strong>Nome:</strong> {{ currentOrder.cliente.nome }}</p>
+          <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
+          <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
+          <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
+        </div>
+      </section>
+    </div>
+  } @else {
+    <div class="glass-card empty-state">Pedido não encontrado.</div>
+  }
+</section>

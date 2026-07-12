@@ -1,0 +1,33 @@
+<section class="auth-page container">
+  <div class="auth-card glass-card">
+    <div class="auth-copy">
+      <span>Área da cliente</span>
+      <h1>Entrar na IA Collection</h1>
+      <p>Acesse sua conta para acompanhar pedidos, consultar status e manter seus dados atualizados.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" class="auth-form">
+      <div class="form-row">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" placeholder="seuemail@exemplo.com" />
+        @if (hasError('email')) {
+          <small>Informe um e-mail válido.</small>
+        }
+      </div>
+
+      <div class="form-row">
+        <label for="password">Senha</label>
+        <input id="password" type="password" formControlName="password" placeholder="Sua senha" />
+        @if (hasError('password')) {
+          <small>A senha precisa ter pelo menos 6 caracteres.</small>
+        }
+      </div>
+
+      <app-ui-button type="submit" variant="secondary" [full]="true" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+      </app-ui-button>
+
+      <p class="auth-link">Ainda não tem conta? <a routerLink="/cadastro">Criar cadastro</a></p>
+    </form>
+  </div>
+</section>

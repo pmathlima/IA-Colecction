@@ -1,0 +1,62 @@
+<section class="account-page container">
+  <header class="account-hero glass-card">
+    <div>
+      <span>Minha conta</span>
+      <h1>Olá, {{ customerName() }}</h1>
+      <p>Gerencie seus dados e acompanhe seus pedidos na IA Collection.</p>
+    </div>
+
+    <div class="account-actions">
+      <app-ui-button routerLink="/meus-pedidos">Meus pedidos</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  <div class="account-layout">
+    <section class="profile-card glass-card">
+      <div class="section-title">
+        <span>Cadastro</span>
+        <h2>Dados pessoais</h2>
+      </div>
+
+      @if (customer()) {
+        <p class="email-line">E-mail: <strong>{{ customer()?.email }}</strong></p>
+      }
+
+      <form [formGroup]="profileForm" (ngSubmit)="submit()" class="profile-form">
+        <div class="form-row">
+          <label for="nome">Nome completo</label>
+          <input id="nome" type="text" formControlName="nome" />
+          @if (hasError('nome')) { <small>Informe seu nome.</small> }
+        </div>
+
+        <div class="form-row">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="tel" formControlName="telefone" />
+          @if (hasError('telefone')) { <small>Informe um telefone válido.</small> }
+        </div>
+
+        <div class="form-row">
+          <label for="endereco">Endereço</label>
+          <textarea id="endereco" formControlName="endereco"></textarea>
+          @if (hasError('endereco')) { <small>Informe um endereço válido.</small> }
+        </div>
+
+        <app-ui-button type="submit" variant="secondary" [disabled]="isSaving()" [full]="true">
+          {{ isSaving() ? 'Salvando...' : 'Salvar alterações' }}
+        </app-ui-button>
+      </form>
+    </section>
+
+    <aside class="quick-card glass-card">
+      <span>Atalhos</span>
+      <h2>Continue comprando</h2>
+      <p>Explore novidades, acompanhe seus pedidos e volte ao carrinho quando quiser.</p>
+      <div class="quick-links">
+        <a routerLink="/produtos">Ver produtos</a>
+        <a routerLink="/carrinho">Carrinho</a>
+        <a routerLink="/meus-pedidos">Histórico de pedidos</a>
+      </div>
+    </aside>
+  </div>
+</section>

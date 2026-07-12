@@ -26,6 +26,42 @@ class AdminLoginResponse(BaseModel):
     admin: AdminInfo
 
 
+
+
+class CustomerRegisterRequest(BaseModel):
+    nome: str = Field(min_length=3, max_length=120)
+    email: EmailStr
+    telefone: str = Field(min_length=10, max_length=40)
+    endereco: str = Field(min_length=8)
+    password: str = Field(min_length=6, max_length=120)
+
+
+class CustomerLoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=120)
+
+
+class CustomerUpdateRequest(BaseModel):
+    nome: str | None = Field(default=None, min_length=3, max_length=120)
+    telefone: str | None = Field(default=None, min_length=10, max_length=40)
+    endereco: str | None = Field(default=None, min_length=8)
+
+
+class CustomerInfo(BaseModel):
+    id: int
+    nome: str
+    email: EmailStr
+    telefone: str
+    endereco: str
+    criadoEm: str
+
+
+class CustomerLoginResponse(BaseModel):
+    accessToken: str
+    tokenType: str = "bearer"
+    cliente: CustomerInfo
+
+
 class ProductCreate(BaseModel):
     nome: str = Field(min_length=2, max_length=120)
     descricao: str = Field(min_length=10)
@@ -112,6 +148,17 @@ class ContactResponse(BaseModel):
     criadoEm: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+def customer_to_response(customer) -> CustomerInfo:
+    return CustomerInfo(
+        id=customer.id,
+        nome=customer.nome,
+        email=customer.email,
+        telefone=customer.telefone,
+        endereco=customer.endereco,
+        criadoEm=customer.criado_em.isoformat(),
+    )
 
 
 def product_to_response(product) -> ProductResponse:

@@ -8,6 +8,17 @@
   @if (cartService.items().length > 0) {
     <div class="checkout-layout">
       <form class="checkout-form glass-card" [formGroup]="checkoutForm" (ngSubmit)="submit()">
+        @if (customerAuthService.currentCustomer(); as customer) {
+          <div class="logged-box">
+            Pedido vinculado à conta de <strong>{{ customer.nome }}</strong>.
+            Depois da compra, ele aparecerá em <a routerLink="/meus-pedidos">Meus pedidos</a>.
+          </div>
+        } @else {
+          <div class="logged-box logged-box--muted">
+            Você pode finalizar como visitante ou <a routerLink="/login">entrar na conta</a> para acompanhar o pedido.
+          </div>
+        }
+
         <div class="form-grid">
           <div class="form-row">
             <label for="nome">Nome completo</label>

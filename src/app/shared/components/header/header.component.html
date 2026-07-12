@@ -17,6 +17,12 @@
       <a routerLink="/produtos" routerLinkActive="active" (click)="closeMenu()">Produtos</a>
       <a routerLink="/sobre" routerLinkActive="active" (click)="closeMenu()">Sobre</a>
       <a routerLink="/contato" routerLinkActive="active" (click)="closeMenu()">Contato</a>
+      @if (customerAuthService.isAuthenticated()) {
+        <a routerLink="/minha-conta" routerLinkActive="active" (click)="closeMenu()">Minha conta</a>
+        <a routerLink="/meus-pedidos" routerLinkActive="active" (click)="closeMenu()">Meus pedidos</a>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Entrar</a>
+      }
       <a routerLink="/admin/produtos" routerLinkActive="active" (click)="closeMenu()">Admin</a>
     </nav>
 

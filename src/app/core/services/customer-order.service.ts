@@ -3,25 +3,22 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { CartItem } from '../models/cart-item.model';
-import { CustomerData, Order } from '../models/order.model';
+import { Order } from '../models/order.model';
 import { CustomerAuthService } from './customer-auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class CheckoutService {
+export class CustomerOrderService {
   private readonly http = inject(HttpClient);
   private readonly customerAuthService = inject(CustomerAuthService);
 
-  createOrder(customer: CustomerData, items: CartItem[]): Observable<Order> {
-    const payload = {
-      cliente: customer,
-      itens: items.map((item) => ({
-        produtoId: item.produto.id,
-        quantidade: item.quantidade,
-      })),
-    };
+  listOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${API_BASE_URL}/customer/orders`, {
+      headers: this.customerAuthService.authHeaders(),
+    });
+  }
 
-    return this.http.post<Order>(`${API_BASE_URL}/orders`, payload, {
+  getOrder(orderId: string): Observable<Order> {
+    return this.http.get<Order>(`${API_BASE_URL}/customer/orders/${orderId}`, {
       headers: this.customerAuthService.authHeaders(),
     });
   }

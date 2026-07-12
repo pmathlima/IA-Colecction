@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 import { CustomerData, PaymentMethod } from '../../core/models/order.model';
 import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
+import { CustomerAuthService } from '../../core/services/customer-auth.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { BrlCurrencyPipe } from '../../shared/pipes/brl-currency.pipe';
@@ -18,12 +19,13 @@ import { BrlCurrencyPipe } from '../../shared/pipes/brl-currency.pipe';
   styleUrl: './checkout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
   protected readonly cartService = inject(CartService);
   protected readonly isSubmitting = signal(false);
 
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly checkoutService = inject(CheckoutService);
+  protected readonly customerAuthService = inject(CustomerAuthService);
   private readonly feedbackService = inject(FeedbackService);
   private readonly router = inject(Router);
 
@@ -34,6 +36,20 @@ export class CheckoutComponent {
     endereco: ['', [Validators.required, Validators.minLength(8)]],
     formaPagamento: ['Pix' as PaymentMethod, Validators.required],
   });
+
+  ngOnInit(): void {
+    const customer = this.customerAuthService.currentCustomer();
+    if (!customer) {
+      return;
+    }
+
+    this.checkoutForm.patchValue({
+      nome: customer.nome,
+      email: customer.email,
+      telefone: customer.telefone,
+      endereco: customer.endereco,
+    });
+  }
 
   submit(): void {
     if (this.cartService.isEmpty()) {

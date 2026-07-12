@@ -62,3 +62,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.logged-box {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-strong);
+  background: rgba(120, 14, 45, 0.08);
+  line-height: 1.5;
+
+  a {
+    color: var(--color-primary);
+    font-weight: 900;
+  }
+
+  &--muted {
+    color: var(--color-text-muted);
+    background: rgba(115, 95, 88, 0.08);
+  }
+}

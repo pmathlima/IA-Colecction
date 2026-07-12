@@ -25,10 +25,26 @@ class Product(Base):
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
 
 
+class Customer(Base):
+    __tablename__ = "customers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    nome: Mapped[str] = mapped_column(String(120), nullable=False)
+    email: Mapped[str] = mapped_column(String(160), unique=True, nullable=False, index=True)
+    telefone: Mapped[str] = mapped_column(String(40), nullable=False)
+    endereco: Mapped[str] = mapped_column(Text, nullable=False)
+    password_salt: Mapped[str] = mapped_column(String(64), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(160), nullable=False)
+    criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    orders: Mapped[list["Order"]] = relationship(back_populates="customer")
+
+
 class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[str] = mapped_column(String(40), primary_key=True, index=True)
+    customer_id: Mapped[int | None] = mapped_column(ForeignKey("customers.id"), nullable=True, index=True)
     cliente_nome: Mapped[str] = mapped_column(String(120), nullable=False)
     cliente_email: Mapped[str] = mapped_column(String(160), nullable=False)
     cliente_telefone: Mapped[str] = mapped_column(String(40), nullable=False)
@@ -38,6 +54,7 @@ class Order(Base):
     total: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
+    customer: Mapped[Customer | None] = relationship(back_populates="orders")
     items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan")
 
 

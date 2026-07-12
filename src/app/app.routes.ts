@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { adminAuthGuard } from './core/guards/admin-auth.guard';
+import { customerAuthGuard } from './core/guards/customer-auth.guard';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,36 @@ export const routes: Routes = [
     path: 'contato',
     loadComponent: () => import('./pages/contato/contato.component').then((m) => m.ContatoComponent),
     title: 'IA Collection | Contato',
+  },
+
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/auth-login/auth-login.component').then((m) => m.AuthLoginComponent),
+    title: 'IA Collection | Login da Cliente',
+  },
+  {
+    path: 'cadastro',
+    loadComponent: () => import('./pages/auth-cadastro/auth-cadastro.component').then((m) => m.AuthCadastroComponent),
+    title: 'IA Collection | Cadastro da Cliente',
+  },
+  {
+    path: 'minha-conta',
+    canActivate: [customerAuthGuard],
+    loadComponent: () => import('./pages/minha-conta/minha-conta.component').then((m) => m.MinhaContaComponent),
+    title: 'IA Collection | Minha Conta',
+  },
+  {
+    path: 'meus-pedidos',
+    canActivate: [customerAuthGuard],
+    loadComponent: () => import('./pages/meus-pedidos/meus-pedidos.component').then((m) => m.MeusPedidosComponent),
+    title: 'IA Collection | Meus Pedidos',
+  },
+  {
+    path: 'meus-pedidos/:id',
+    canActivate: [customerAuthGuard],
+    loadComponent: () =>
+      import('./pages/meu-pedido-detalhe/meu-pedido-detalhe.component').then((m) => m.MeuPedidoDetalheComponent),
+    title: 'IA Collection | Detalhe do Pedido',
   },
   {
     path: 'admin/login',

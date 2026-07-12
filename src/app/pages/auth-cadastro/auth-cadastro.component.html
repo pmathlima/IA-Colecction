@@ -1,0 +1,47 @@
+<section class="auth-page container">
+  <div class="auth-card glass-card">
+    <div class="auth-copy">
+      <span>Nova cliente</span>
+      <h1>Criar cadastro</h1>
+      <p>Crie sua conta para acompanhar compras, consultar pedidos e agilizar o checkout.</p>
+    </div>
+
+    <form [formGroup]="cadastroForm" (ngSubmit)="submit()" class="auth-form">
+      <div class="form-row">
+        <label for="nome">Nome completo</label>
+        <input id="nome" type="text" formControlName="nome" placeholder="Seu nome completo" />
+        @if (hasError('nome')) { <small>Informe seu nome.</small> }
+      </div>
+
+      <div class="form-row">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" placeholder="seuemail@exemplo.com" />
+        @if (hasError('email')) { <small>Informe um e-mail válido.</small> }
+      </div>
+
+      <div class="form-row">
+        <label for="telefone">Telefone</label>
+        <input id="telefone" type="tel" formControlName="telefone" placeholder="(91) 99999-9999" />
+        @if (hasError('telefone')) { <small>Informe um telefone válido.</small> }
+      </div>
+
+      <div class="form-row">
+        <label for="endereco">Endereço</label>
+        <textarea id="endereco" formControlName="endereco" placeholder="Rua, número, bairro, cidade e estado"></textarea>
+        @if (hasError('endereco')) { <small>Informe seu endereço.</small> }
+      </div>
+
+      <div class="form-row">
+        <label for="password">Senha</label>
+        <input id="password" type="password" formControlName="password" placeholder="Mínimo de 6 caracteres" />
+        @if (hasError('password')) { <small>A senha precisa ter pelo menos 6 caracteres.</small> }
+      </div>
+
+      <app-ui-button type="submit" variant="secondary" [full]="true" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Criando cadastro...' : 'Criar conta' }}
+      </app-ui-button>
+
+      <p class="auth-link">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    </form>
+  </div>
+</section>

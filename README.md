@@ -274,3 +274,27 @@ Caso o frontend na VPS use `/api` no lugar de `http://localhost:8000/api`, confi
 ```txt
 src/app/core/config/api.config.ts
 ```
+
+
+## Área da Cliente
+
+A aplicação também possui área da cliente com cadastro, login, atualização de dados e acompanhamento de pedidos.
+
+Rotas adicionadas no frontend:
+
+- `/cadastro` — criação de conta da cliente;
+- `/login` — login da cliente;
+- `/minha-conta` — dados pessoais e endereço;
+- `/meus-pedidos` — histórico de pedidos vinculados à conta;
+- `/meus-pedidos/:id` — detalhes de um pedido da cliente.
+
+Endpoints adicionados no backend:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/customer/me`
+- `PUT /api/customer/me`
+- `GET /api/customer/orders`
+- `GET /api/customer/orders/{id}`
+
+O checkout continua permitindo compra como visitante. Quando a cliente está logada, o pedido é vinculado automaticamente à conta e aparece em **Meus pedidos**.

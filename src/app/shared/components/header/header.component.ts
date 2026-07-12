@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { CartService } from '../../../core/services/cart.service';
+import { CustomerAuthService } from '../../../core/services/customer-auth.service';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +14,7 @@ import { CartService } from '../../../core/services/cart.service';
 })
 export class HeaderComponent {
   protected readonly cartService = inject(CartService);
+  protected readonly customerAuthService = inject(CustomerAuthService);
   protected readonly menuOpen = signal(false);
 
   toggleMenu(): void {
