@@ -80,3 +80,32 @@ backend/ia_collection.db
 ```
 
 Para recriar os dados do zero, apague o arquivo `ia_collection.db` e rode novamente a API.
+
+## Administração
+
+O backend possui autenticação administrativa simples para o painel de produtos.
+
+Variáveis disponíveis:
+
+```env
+ADMIN_EMAIL=admin@iacollection.com
+ADMIN_PASSWORD=admin123
+ADMIN_ACCESS_TOKEN=ia-collection-admin-token
+```
+
+Endpoints:
+
+```txt
+POST   /api/admin/login
+GET    /api/admin/products
+GET    /api/admin/products/{id}
+POST   /api/admin/products
+PUT    /api/admin/products/{id}
+DELETE /api/admin/products/{id}
+```
+
+As rotas de produtos administrativos precisam do cabeçalho:
+
+```txt
+Authorization: Bearer <token>
+```

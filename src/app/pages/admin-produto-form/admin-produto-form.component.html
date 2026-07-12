@@ -1,0 +1,91 @@
+<section class="admin-form-page container">
+  <header class="page-header">
+    <span>Painel administrativo</span>
+    <h1>{{ pageTitle() }}</h1>
+    <p>Cadastre peças femininas, organize categorias, controle estoque e escolha quais produtos aparecem em destaque.</p>
+  </header>
+
+  @if (isLoading()) {
+    <p class="empty-state glass-card">Carregando produto...</p>
+  } @else {
+    <div class="admin-form-layout">
+      <form class="product-form glass-card" [formGroup]="productForm" (ngSubmit)="submit()">
+        <div class="form-grid form-grid--two">
+          <div class="form-row">
+            <label for="nome">Nome do produto</label>
+            <input id="nome" type="text" formControlName="nome" placeholder="Vestido midi Aurora" />
+            @if (hasError('nome')) {
+              <small>Informe o nome do produto.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="categoria">Categoria</label>
+            <select id="categoria" formControlName="categoria">
+              @for (category of categories; track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+            @if (hasError('categoria')) {
+              <small>Selecione uma categoria.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" formControlName="descricao" placeholder="Descreva tecido, estilo, ocasião e diferenciais da peça."></textarea>
+          @if (hasError('descricao')) {
+            <small>Digite uma descrição com pelo menos 10 caracteres.</small>
+          }
+        </div>
+
+        <div class="form-grid form-grid--two">
+          <div class="form-row">
+            <label for="preco">Preço</label>
+            <input id="preco" type="number" min="0" step="0.01" formControlName="preco" />
+            @if (hasError('preco')) {
+              <small>Informe um preço maior que zero.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="estoque">Estoque</label>
+            <input id="estoque" type="number" min="0" step="1" formControlName="estoque" />
+            @if (hasError('estoque')) {
+              <small>Informe a quantidade em estoque.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="imagem">Imagem</label>
+          <input id="imagem" type="text" formControlName="imagem" placeholder="assets/products/vestido-aurora.svg" />
+          @if (hasError('imagem')) {
+            <small>Informe o caminho ou URL da imagem.</small>
+          }
+        </div>
+
+        <label class="check-row">
+          <input type="checkbox" formControlName="destaque" />
+          <span>Exibir produto em destaque na home</span>
+        </label>
+
+        <div class="form-actions">
+          <app-ui-button type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Salvando...' : 'Salvar produto' }}
+          </app-ui-button>
+          <app-ui-button variant="ghost" routerLink="/admin/produtos">Cancelar</app-ui-button>
+        </div>
+      </form>
+
+      <aside class="product-preview glass-card">
+        <span>Prévia</span>
+        <img [src]="previewImage()" alt="Prévia do produto" />
+        <h2>{{ productForm.controls.nome.value || 'Nome do produto' }}</h2>
+        <p>{{ productForm.controls.descricao.value || 'A descrição do produto aparecerá aqui.' }}</p>
+        <strong>R$ {{ productForm.controls.preco.value || 0 }}</strong>
+      </aside>
+    </div>
+  }
+</section>

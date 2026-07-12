@@ -1,0 +1,90 @@
+<section class="admin-page container">
+  <header class="admin-hero glass-card">
+    <div>
+      <span>Painel administrativo</span>
+      <h1>Produtos da IA Collection</h1>
+      <p>Gerencie o catálogo da loja, controle estoque, destaques e informações exibidas para as clientes.</p>
+    </div>
+
+    <div class="admin-hero__actions">
+      <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/produtos/novo">Novo produto</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  <div class="admin-metrics">
+    <article class="glass-card">
+      <span>Total de produtos</span>
+      <strong>{{ totalProducts() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Produtos em destaque</span>
+      <strong>{{ featuredCount() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Itens em estoque</span>
+      <strong>{{ stockCount() }}</strong>
+    </article>
+  </div>
+
+  <section class="admin-table glass-card">
+    <div class="admin-table__header">
+      <div>
+        <span>Catálogo</span>
+        <h2>Lista de produtos</h2>
+      </div>
+      <app-ui-button variant="ghost" type="button" (click)="loadProducts()">Atualizar</app-ui-button>
+    </div>
+
+    @if (isLoading()) {
+      <p class="empty-state">Carregando produtos...</p>
+    } @else if (!products().length) {
+      <p class="empty-state">Nenhum produto cadastrado ainda.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Categoria</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>Destaque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products(); track product.id) {
+              <tr>
+                <td>
+                  <div class="product-cell">
+                    <img [src]="product.imagem" [alt]="product.nome" />
+                    <div>
+                      <strong>{{ product.nome }}</strong>
+                      <small>{{ product.descricao }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ product.categoria }}</td>
+                <td>{{ product.preco | brlCurrency }}</td>
+                <td>{{ product.estoque }}</td>
+                <td>
+                  <span class="status" [class.status--on]="product.destaque">
+                    {{ product.destaque ? 'Sim' : 'Não' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <a [routerLink]="['/admin/produtos', product.id, 'editar']">Editar</a>
+                    <button type="button" (click)="deleteProduct(product)">Remover</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>

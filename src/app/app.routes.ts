@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { adminAuthGuard } from './core/guards/admin-auth.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -36,6 +38,31 @@ export const routes: Routes = [
     path: 'contato',
     loadComponent: () => import('./pages/contato/contato.component').then((m) => m.ContatoComponent),
     title: 'IA Collection | Contato',
+  },
+  {
+    path: 'admin/login',
+    loadComponent: () => import('./pages/admin-login/admin-login.component').then((m) => m.AdminLoginComponent),
+    title: 'IA Collection | Login Admin',
+  },
+  {
+    path: 'admin/produtos',
+    canActivate: [adminAuthGuard],
+    loadComponent: () => import('./pages/admin-produtos/admin-produtos.component').then((m) => m.AdminProdutosComponent),
+    title: 'IA Collection | Admin Produtos',
+  },
+  {
+    path: 'admin/produtos/novo',
+    canActivate: [adminAuthGuard],
+    loadComponent: () =>
+      import('./pages/admin-produto-form/admin-produto-form.component').then((m) => m.AdminProdutoFormComponent),
+    title: 'IA Collection | Novo Produto',
+  },
+  {
+    path: 'admin/produtos/:id/editar',
+    canActivate: [adminAuthGuard],
+    loadComponent: () =>
+      import('./pages/admin-produto-form/admin-produto-form.component').then((m) => m.AdminProdutoFormComponent),
+    title: 'IA Collection | Editar Produto',
   },
   {
     path: '**',

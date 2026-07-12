@@ -1,12 +1,15 @@
-export type ProductCategory =
-  | 'Vestidos'
-  | 'Blusas'
-  | 'Conjuntos'
-  | 'Saias'
-  | 'Calçados'
-  | 'Acessórios'
-  | 'Lançamentos'
-  | 'Promoções';
+export const PRODUCT_CATEGORIES = [
+  'Vestidos',
+  'Blusas',
+  'Conjuntos',
+  'Saias',
+  'Calçados',
+  'Acessórios',
+  'Lançamentos',
+  'Promoções',
+] as const;
+
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
 
 export interface Product {
   id: number;

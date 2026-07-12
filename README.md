@@ -172,3 +172,66 @@ GET    /api/contact
 - Caso a API esteja desligada, o frontend mantém uma lista local de demonstração como fallback para não quebrar a apresentação.
 - O banco SQLite é criado automaticamente dentro da pasta `backend` no primeiro start da API.
 - Para recriar os produtos do zero, apague o arquivo `backend/ia_collection.db` e rode novamente o backend.
+
+## Painel administrativo de produtos
+
+Esta versão inclui um painel administrativo inicial para gerenciamento do catálogo.
+
+Rotas do frontend:
+
+```txt
+/admin/login
+/admin/produtos
+/admin/produtos/novo
+/admin/produtos/:id/editar
+```
+
+Credenciais padrão em ambiente de desenvolvimento:
+
+```txt
+E-mail: admin@iacollection.com
+Senha: admin123
+```
+
+Essas credenciais podem ser alteradas no backend usando variáveis de ambiente:
+
+```env
+ADMIN_EMAIL=admin@iacollection.com
+ADMIN_PASSWORD=admin123
+ADMIN_ACCESS_TOKEN=troque-este-token-em-producao
+```
+
+Endpoints administrativos da API:
+
+```txt
+POST   /api/admin/login
+GET    /api/admin/products
+GET    /api/admin/products/{id}
+POST   /api/admin/products
+PUT    /api/admin/products/{id}
+DELETE /api/admin/products/{id}
+```
+
+As rotas administrativas de produto exigem o token Bearer retornado no login.
+
+### Atualizar na VPS
+
+Depois de fazer merge da branch no GitHub, na VPS rode:
+
+```bash
+cd /var/www/ia-collection
+git pull
+npm install
+npm run build
+cd backend
+source .venv/bin/activate
+pip install -r requirements.txt
+sudo systemctl restart ia-collection-api
+sudo systemctl restart nginx
+```
+
+Caso o frontend na VPS use `/api` no lugar de `http://localhost:8000/api`, confira o arquivo:
+
+```txt
+src/app/core/config/api.config.ts
+```

@@ -1,0 +1,40 @@
+<section class="admin-login container">
+  <div class="admin-login__brand glass-card">
+    <img src="assets/logo-ia-collection.png" alt="Logo IA Collection" />
+    <span>Painel administrativo</span>
+    <h1>Gestão da IA Collection</h1>
+    <p>Acesse para cadastrar, editar e organizar os produtos da loja de moda feminina.</p>
+  </div>
+
+  <form class="admin-login__form glass-card" [formGroup]="loginForm" (ngSubmit)="submit()">
+    <header>
+      <span>Admin</span>
+      <h2>Entrar no painel</h2>
+      <p>Use as credenciais administrativas configuradas no backend.</p>
+    </header>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" placeholder="admin@iacollection.com" />
+        @if (hasError('email')) {
+          <small>Informe um e-mail válido.</small>
+        }
+      </div>
+
+      <div class="form-row">
+        <label for="password">Senha</label>
+        <input id="password" type="password" formControlName="password" placeholder="Senha administrativa" />
+        @if (hasError('password')) {
+          <small>Informe a senha do administrador.</small>
+        }
+      </div>
+    </div>
+
+    <app-ui-button type="submit" [full]="true" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+    </app-ui-button>
+
+    <a class="admin-login__back" routerLink="/">Voltar para a loja</a>
+  </form>
+</section>

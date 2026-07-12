@@ -9,6 +9,42 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 PaymentMethod = Literal["Pix", "Cartão de Crédito", "Boleto Simulado"]
 
 
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=4, max_length=120)
+
+
+class AdminInfo(BaseModel):
+    email: EmailStr
+    nome: str
+
+
+class AdminLoginResponse(BaseModel):
+    accessToken: str
+    tokenType: str = "bearer"
+    admin: AdminInfo
+
+
+class ProductCreate(BaseModel):
+    nome: str = Field(min_length=2, max_length=120)
+    descricao: str = Field(min_length=10)
+    preco: float = Field(gt=0)
+    categoria: str = Field(min_length=2, max_length=40)
+    imagem: str = Field(min_length=1, max_length=255)
+    estoque: int = Field(ge=0)
+    destaque: bool = False
+
+
+class ProductUpdate(BaseModel):
+    nome: str | None = Field(default=None, min_length=2, max_length=120)
+    descricao: str | None = Field(default=None, min_length=10)
+    preco: float | None = Field(default=None, gt=0)
+    categoria: str | None = Field(default=None, min_length=2, max_length=40)
+    imagem: str | None = Field(default=None, min_length=1, max_length=255)
+    estoque: int | None = Field(default=None, ge=0)
+    destaque: bool | None = None
+
+
 class ProductResponse(BaseModel):
     id: int
     nome: str
