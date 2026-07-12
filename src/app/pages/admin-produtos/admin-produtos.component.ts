@@ -8,11 +8,12 @@ import { AdminProductService } from '../../core/services/admin-product.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { BrlCurrencyPipe } from '../../shared/pipes/brl-currency.pipe';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-admin-produtos',
   standalone: true,
-  imports: [RouterLink, UiButtonComponent, BrlCurrencyPipe],
+  imports: [RouterLink, UiButtonComponent, BrlCurrencyPipe, ImageUrlPipe],
   templateUrl: './admin-produtos.component.html',
   styleUrl: './admin-produtos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

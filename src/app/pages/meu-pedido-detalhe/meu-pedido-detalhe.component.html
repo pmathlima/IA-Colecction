@@ -15,6 +15,15 @@
   @if (isLoading()) {
     <div class="glass-card empty-state">Carregando pedido...</div>
   } @else if (order(); as currentOrder) {
+    <section class="glass-card whatsapp-card">
+      <div>
+        <span>Confirmação</span>
+        <h2>Confirmar pelo WhatsApp</h2>
+        <p>Abra uma mensagem pronta para confirmar seu pedido diretamente com a loja.</p>
+      </div>
+      <button class="whatsapp-button" type="button" (click)="confirmOnWhatsapp(currentOrder)">Confirmar pelo WhatsApp</button>
+    </section>
+
     <div class="detail-layout">
       <section class="glass-card detail-card">
         <div class="section-title">
@@ -25,7 +34,7 @@
         <div class="info-grid">
           <div>
             <small>Status</small>
-            <strong>{{ statusLabels[currentOrder.status] ?? currentOrder.status }}</strong>
+            <strong>{{ statusLabels[currentOrder.status] }}</strong>
           </div>
           <div>
             <small>Total</small>

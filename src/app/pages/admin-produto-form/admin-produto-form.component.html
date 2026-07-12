@@ -2,7 +2,7 @@
   <header class="page-header">
     <span>Painel administrativo</span>
     <h1>{{ pageTitle() }}</h1>
-    <p>Cadastre peças femininas, organize categorias, controle estoque e escolha quais produtos aparecem em destaque.</p>
+    <p>Cadastre peças femininas, organize categorias, controle estoque e adicione uma galeria com fotos reais do produto.</p>
   </header>
 
   @if (isLoading()) {
@@ -58,12 +58,51 @@
           </div>
         </div>
 
+        <div class="form-row image-field">
+          <label for="imagemArquivo">Galeria de imagens do produto</label>
+          <div class="image-upload-box">
+            <input
+              id="imagemArquivo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              [disabled]="isUploadingImage()"
+              (change)="uploadImages($event)"
+            />
+            <div>
+              <strong>{{ isUploadingImage() ? 'Enviando imagens...' : 'Enviar imagens' }}</strong>
+              <span>Use JPG, PNG ou WEBP com até 5 MB por imagem. Máximo de 8 imagens por produto.</span>
+            </div>
+          </div>
+        </div>
+
         <div class="form-row">
-          <label for="imagem">Imagem</label>
+          <label for="imagem">Imagem principal</label>
           <input id="imagem" type="text" formControlName="imagem" placeholder="assets/products/vestido-aurora.svg" />
           @if (hasError('imagem')) {
-            <small>Informe o caminho ou URL da imagem.</small>
+            <small>Envie uma imagem ou informe o caminho/URL.</small>
           }
+        </div>
+
+        <div class="gallery-manager">
+          <div class="gallery-manager__header">
+            <strong>Imagens cadastradas</strong>
+            <span>{{ galleryImages().length }} / 8</span>
+          </div>
+
+          <div class="gallery-manager__grid">
+            @for (image of galleryImages(); track image) {
+              <article class="gallery-item" [class.gallery-item--main]="image === mainImage()">
+                <img [src]="image | imageUrl" alt="Imagem do produto" />
+                <div class="gallery-item__actions">
+                  <button type="button" (click)="setMainImage(image)">
+                    {{ image === mainImage() ? 'Principal' : 'Definir principal' }}
+                  </button>
+                  <button type="button" class="danger" (click)="removeImage(image)">Remover</button>
+                </div>
+              </article>
+            }
+          </div>
         </div>
 
         <label class="check-row">
@@ -81,7 +120,7 @@
 
       <aside class="product-preview glass-card">
         <span>Prévia</span>
-        <img [src]="previewImage()" alt="Prévia do produto" />
+        <img [src]="mainImage() | imageUrl" alt="Prévia do produto" />
         <h2>{{ productForm.controls.nome.value || 'Nome do produto' }}</h2>
         <p>{{ productForm.controls.descricao.value || 'A descrição do produto aparecerá aqui.' }}</p>
         <strong>R$ {{ productForm.controls.preco.value || 0 }}</strong>

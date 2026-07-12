@@ -98,3 +98,121 @@
     grid-template-columns: 1fr;
   }
 }
+
+.image-field {
+  gap: 0.55rem;
+}
+
+.image-upload-box {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 241, 0.72);
+
+  input[type='file'] {
+    width: 100%;
+    max-width: 260px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  div {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  strong {
+    color: var(--color-primary-strong);
+  }
+
+  span {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 620px) {
+  .image-upload-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gallery-manager {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.gallery-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  strong {
+    color: var(--color-primary-strong);
+  }
+
+  span {
+    color: var(--color-text-muted);
+    font-weight: 800;
+  }
+}
+
+.gallery-manager__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.8rem;
+}
+
+.gallery-item {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fffaf1;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: calc(var(--radius-md) - 0.35rem);
+    object-fit: cover;
+    background: #fff;
+  }
+}
+
+.gallery-item--main {
+  border-color: rgba(120, 14, 45, 0.5);
+  box-shadow: 0 16px 40px rgba(120, 14, 45, 0.12);
+}
+
+.gallery-item__actions {
+  display: grid;
+  gap: 0.35rem;
+
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.45rem 0.6rem;
+    background: rgba(120, 14, 45, 0.1);
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .danger {
+    background: rgba(185, 28, 28, 0.09);
+    color: var(--color-danger);
+  }
+}

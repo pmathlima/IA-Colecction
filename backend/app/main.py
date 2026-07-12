@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .routers import admin, contact, customers, orders, products
 from .seed import init_db
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+UPLOADS_DIR = BASE_DIR / "uploads"
+PRODUCT_UPLOADS_DIR = UPLOADS_DIR / "products"
+PRODUCT_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(
     title="IA Collection API",
@@ -28,6 +35,9 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
+
+
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/api/health", tags=["Saúde"])

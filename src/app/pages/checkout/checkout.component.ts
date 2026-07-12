@@ -3,13 +3,15 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { CustomerData, PaymentMethod } from '../../core/models/order.model';
+import { CustomerData, Order, PaymentMethod } from '../../core/models/order.model';
 import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { CustomerAuthService } from '../../core/services/customer-auth.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { BrlCurrencyPipe } from '../../shared/pipes/brl-currency.pipe';
+
+const LAST_ORDER_STORAGE_KEY = 'ia-collection-last-order';
 
 @Component({
   selector: 'app-checkout',
@@ -70,9 +72,10 @@ export class CheckoutComponent implements OnInit {
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (order) => {
+          this.saveLastOrder(order);
           this.cartService.clearCart();
           this.feedbackService.show(`Pedido ${order.id} confirmado com sucesso!`, 'success');
-          void this.router.navigateByUrl('/');
+          void this.router.navigateByUrl('/pedido-confirmado');
         },
         error: (error) => {
           const message = error?.error?.detail ?? 'Não foi possível finalizar o pedido. Verifique a API e tente novamente.';
@@ -84,5 +87,9 @@ export class CheckoutComponent implements OnInit {
   hasError(field: keyof typeof this.checkoutForm.controls): boolean {
     const control = this.checkoutForm.controls[field];
     return control.invalid && (control.touched || control.dirty);
+  }
+
+  private saveLastOrder(order: Order): void {
+    sessionStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(order));
   }
 }

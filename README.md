@@ -298,3 +298,63 @@ Endpoints adicionados no backend:
 - `GET /api/customer/orders/{id}`
 
 O checkout continua permitindo compra como visitante. Quando a cliente está logada, o pedido é vinculado automaticamente à conta e aparece em **Meus pedidos**.
+
+
+## Confirmação pelo WhatsApp
+
+O checkout salva o pedido no banco e redireciona a cliente para a página `/pedido-confirmado`. Nessa tela, a cliente pode clicar em **Confirmar pelo WhatsApp** para abrir uma conversa com a loja usando uma mensagem pronta com número do pedido, dados da cliente, produtos e total.
+
+Também existe um botão flutuante de WhatsApp disponível em todas as páginas da loja para contato rápido.
+
+Para trocar o número da loja, edite:
+
+```ts
+src/app/core/config/store.config.ts
+```
+
+Atualize a constante:
+
+```ts
+export const STORE_WHATSAPP_NUMBER = '5591999999999';
+```
+
+Use o formato internacional sem `+`, espaços ou parênteses. Exemplo para Brasil/Pará: `5591999999999`.
+
+## Galeria de imagens reais do produto
+
+O painel administrativo de produtos permite enviar uma ou mais imagens reais para cada produto diretamente pelo navegador.
+
+Na tela `/admin/produtos/novo` ou `/admin/produtos/:id/editar`, use o campo **Galeria de imagens do produto** para selecionar arquivos locais. O sistema aceita:
+
+- JPG;
+- PNG;
+- WEBP;
+- tamanho máximo de 5 MB por imagem;
+- até 8 imagens por produto.
+
+Após o envio, o backend salva os arquivos em `backend/uploads/products` e retorna URLs no formato:
+
+```txt
+/api/uploads/products/nome-do-arquivo.jpg
+```
+
+A primeira imagem da galeria é considerada a imagem principal do produto. No painel administrativo é possível:
+
+- enviar várias imagens;
+- visualizar miniaturas;
+- definir qual imagem será a principal;
+- remover imagens da galeria;
+- salvar a galeria junto com o produto.
+
+No catálogo, carrinho e painel administrativo é usada a imagem principal. Na página de detalhes do produto, as imagens aparecem como galeria com miniaturas clicáveis.
+
+Endpoints administrativos adicionados:
+
+```txt
+POST /api/admin/products/upload-image
+POST /api/admin/products/upload-images
+```
+
+Essas rotas exigem autenticação administrativa via Bearer Token.
+
+> Observação: a pasta `backend/uploads/` fica fora do Git para evitar subir imagens reais no repositório. Na VPS, as imagens enviadas ficam salvas localmente no servidor.

@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { AdminProductPayload, AdminProductResponse } from '../models/admin.model';
+import { AdminImageUploadResponse, AdminImagesUploadResponse, AdminProductPayload, AdminProductResponse } from '../models/admin.model';
 import { AdminAuthService } from './admin-auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +31,26 @@ export class AdminProductService {
 
   updateProduct(id: number, payload: AdminProductPayload): Observable<AdminProductResponse> {
     return this.http.put<AdminProductResponse>(`${API_BASE_URL}/admin/products/${id}`, payload, {
+      headers: this.authHeaders(),
+    });
+  }
+
+
+  uploadProductImage(file: File): Observable<AdminImageUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<AdminImageUploadResponse>(`${API_BASE_URL}/admin/products/upload-image`, formData, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  uploadProductImages(files: File[]): Observable<AdminImagesUploadResponse> {
+    const formData = new FormData();
+
+    files.forEach((file) => formData.append('files', file));
+
+    return this.http.post<AdminImagesUploadResponse>(`${API_BASE_URL}/admin/products/upload-images`, formData, {
       headers: this.authHeaders(),
     });
   }

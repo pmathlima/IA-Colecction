@@ -4,11 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FeedbackMessageComponent } from './shared/components/feedback-message/feedback-message.component';
+import { WhatsappFloatingComponent } from './shared/components/whatsapp-floating/whatsapp-floating.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, FeedbackMessageComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, FeedbackMessageComponent, WhatsappFloatingComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

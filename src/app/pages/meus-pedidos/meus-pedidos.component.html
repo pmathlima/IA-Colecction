@@ -46,7 +46,7 @@
               <strong>{{ order.total | brlCurrency }}</strong>
               <small>{{ order.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
             </div>
-            <span class="status">{{ statusLabels[order.status] ?? order.status }}</span>
+            <span class="status">{{ statusLabels[order.status] }}</span>
             <a [routerLink]="['/meus-pedidos', order.id]">Ver detalhes</a>
           </article>
         }

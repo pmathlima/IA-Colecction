@@ -22,7 +22,26 @@ class Product(Base):
     destaque: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     data_criacao: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
+    images: Mapped[list["ProductImage"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        order_by="ProductImage.ordem",
+    )
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
+
+
+class ProductImage(Base):
+    __tablename__ = "product_images"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False, index=True)
+    url: Mapped[str] = mapped_column(String(255), nullable=False)
+    alt: Mapped[str] = mapped_column(String(160), nullable=False, default="Imagem do produto")
+    principal: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    ordem: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    product: Mapped[Product] = relationship(back_populates="images")
 
 
 class Customer(Base):

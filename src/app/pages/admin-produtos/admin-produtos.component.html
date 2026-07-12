@@ -60,7 +60,7 @@
               <tr>
                 <td>
                   <div class="product-cell">
-                    <img [src]="product.imagem" [alt]="product.nome" />
+                    <img [src]="product.imagem | imageUrl" [alt]="product.nome" />
                     <div>
                       <strong>{{ product.nome }}</strong>
                       <small>{{ product.descricao }}</small>

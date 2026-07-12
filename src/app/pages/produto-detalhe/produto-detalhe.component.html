@@ -3,8 +3,25 @@
     <a routerLink="/produtos" class="back-link">← Voltar para produtos</a>
 
     <div class="detail-grid">
-      <div class="detail-image glass-card">
-        <img [src]="product.imagem" [alt]="product.nome" />
+      <div class="detail-gallery glass-card">
+        <div class="detail-image">
+          <img [src]="activeImage() | imageUrl" [alt]="product.nome" />
+        </div>
+
+        @if (galleryImages().length > 1) {
+          <div class="detail-thumbnails" aria-label="Galeria de imagens do produto">
+            @for (image of galleryImages(); track image) {
+              <button
+                type="button"
+                class="thumbnail"
+                [class.thumbnail--active]="image === activeImage()"
+                (click)="selectImage(image)"
+              >
+                <img [src]="image | imageUrl" [alt]="product.nome" />
+              </button>
+            }
+          </div>
+        }
       </div>
 
       <article class="detail-info glass-card">

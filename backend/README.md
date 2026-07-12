@@ -109,3 +109,29 @@ As rotas de produtos administrativos precisam do cabeçalho:
 ```txt
 Authorization: Bearer <token>
 ```
+
+## Upload de imagens de produtos
+
+O backend possui o endpoint administrativo:
+
+```txt
+POST /api/admin/products/upload-image
+```
+
+Ele recebe um arquivo `multipart/form-data` no campo `file`, valida o formato e o tamanho, salva em `backend/uploads/products` e retorna a URL pública para ser gravada no produto.
+
+Formatos aceitos:
+
+- JPG
+- PNG
+- WEBP
+
+Tamanho máximo: 5 MB.
+
+As imagens ficam disponíveis em:
+
+```txt
+/api/uploads/products/<arquivo>
+```
+
+A pasta `backend/uploads/` está no `.gitignore` para evitar versionar imagens enviadas pelo painel.

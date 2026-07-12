@@ -31,6 +31,12 @@ export const routes: Routes = [
     title: 'IA Collection | Checkout',
   },
   {
+    path: 'pedido-confirmado',
+    loadComponent: () =>
+      import('./pages/pedido-confirmado/pedido-confirmado.component').then((m) => m.PedidoConfirmadoComponent),
+    title: 'IA Collection | Pedido Confirmado',
+  },
+  {
     path: 'sobre',
     loadComponent: () => import('./pages/sobre/sobre.component').then((m) => m.SobreComponent),
     title: 'IA Collection | Sobre',

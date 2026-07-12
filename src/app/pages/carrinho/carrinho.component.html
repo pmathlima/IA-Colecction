@@ -10,7 +10,7 @@
       <div class="cart-list">
         @for (item of cartService.items(); track item.produto.id) {
           <article class="cart-item glass-card">
-            <img [src]="item.produto.imagem" [alt]="item.produto.nome" />
+            <img [src]="item.produto.imagem | imageUrl" [alt]="item.produto.nome" />
 
             <div class="cart-item__info">
               <span>{{ item.produto.categoria }}</span>

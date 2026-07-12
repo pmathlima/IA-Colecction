@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 import { ORDER_STATUS_LABELS, Order } from '../../core/models/order.model';
 import { CustomerOrderService } from '../../core/services/customer-order.service';
 import { FeedbackService } from '../../core/services/feedback.service';
+import { WhatsappService } from '../../core/services/whatsapp.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { BrlCurrencyPipe } from '../../shared/pipes/brl-currency.pipe';
 
@@ -25,6 +26,7 @@ export class MeuPedidoDetalheComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly orderService = inject(CustomerOrderService);
   private readonly feedbackService = inject(FeedbackService);
+  private readonly whatsappService = inject(WhatsappService);
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
@@ -35,6 +37,10 @@ export class MeuPedidoDetalheComponent implements OnInit {
     }
 
     this.loadOrder(orderId);
+  }
+
+  confirmOnWhatsapp(order: Order): void {
+    this.whatsappService.openOrderConfirmation(order);
   }
 
   private loadOrder(orderId: string): void {

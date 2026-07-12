@@ -20,8 +20,18 @@ export interface AdminProductPayload {
   preco: number;
   categoria: ProductCategory;
   imagem: string;
+  imagens: string[];
   estoque: number;
   destaque: boolean;
 }
 
 export type AdminProductResponse = Product;
+
+export interface AdminImageUploadResponse {
+  url: string;
+  filename: string;
+}
+
+export interface AdminImagesUploadResponse {
+  images: AdminImageUploadResponse[];
+}

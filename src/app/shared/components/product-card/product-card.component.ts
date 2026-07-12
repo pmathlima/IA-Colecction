@@ -5,13 +5,14 @@ import { Product } from '../../../core/models/product.model';
 import { CartService } from '../../../core/services/cart.service';
 import { FeedbackService } from '../../../core/services/feedback.service';
 import { BrlCurrencyPipe } from '../../pipes/brl-currency.pipe';
+import { ImageUrlPipe } from '../../pipes/image-url.pipe';
 import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
 import { UiButtonComponent } from '../ui-button/ui-button.component';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, BrlCurrencyPipe, CategoryBadgeComponent, UiButtonComponent],
+  imports: [RouterLink, BrlCurrencyPipe, ImageUrlPipe, CategoryBadgeComponent, UiButtonComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

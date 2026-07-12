@@ -1,0 +1,89 @@
+<section class="confirmation-page container">
+  @if (order(); as currentOrder) {
+    <header class="confirmation-hero glass-card">
+      <span>Pedido realizado</span>
+      <h1>Compra recebida com sucesso!</h1>
+      <p>
+        Seu pedido <strong>{{ currentOrder.id }}</strong> foi registrado. Agora você pode confirmar a compra pelo WhatsApp
+        da loja com uma mensagem pronta.
+      </p>
+
+      <div class="hero-actions">
+        <button class="whatsapp-button" type="button" (click)="confirmOnWhatsapp(currentOrder)">
+          Confirmar pelo WhatsApp
+        </button>
+        <app-ui-button routerLink="/produtos" variant="ghost">Continuar comprando</app-ui-button>
+        @if (customerAuthService.isAuthenticated()) {
+          <app-ui-button routerLink="/meus-pedidos">Ver meus pedidos</app-ui-button>
+        }
+      </div>
+    </header>
+
+    <div class="confirmation-layout">
+      <section class="glass-card confirmation-card">
+        <div class="section-title">
+          <span>Resumo</span>
+          <h2>Dados do pedido</h2>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <small>Status</small>
+            <strong>{{ statusLabels[currentOrder.status] }}</strong>
+          </div>
+          <div>
+            <small>Total</small>
+            <strong>{{ currentOrder.total | brlCurrency }}</strong>
+          </div>
+          <div>
+            <small>Pagamento</small>
+            <strong>{{ currentOrder.cliente.formaPagamento }}</strong>
+          </div>
+          <div>
+            <small>Data</small>
+            <strong>{{ currentOrder.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-card confirmation-card">
+        <div class="section-title">
+          <span>Produtos</span>
+          <h2>Itens comprados</h2>
+        </div>
+
+        <div class="items-list">
+          @for (item of currentOrder.itens; track item.produtoId) {
+            <article class="item-row">
+              <div>
+                <strong>{{ item.nome }}</strong>
+                <small>{{ item.quantidade }} × {{ item.precoUnitario | brlCurrency }}</small>
+              </div>
+              <span>{{ item.subtotal | brlCurrency }}</span>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="glass-card confirmation-card">
+        <div class="section-title">
+          <span>Cliente</span>
+          <h2>Dados de contato e entrega</h2>
+        </div>
+
+        <div class="customer-data">
+          <p><strong>Nome:</strong> {{ currentOrder.cliente.nome }}</p>
+          <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
+          <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
+          <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
+        </div>
+      </section>
+    </div>
+  } @else {
+    <div class="glass-card empty-state">
+      <h1>Nenhum pedido recente encontrado</h1>
+      <p>Finalize uma compra para visualizar a confirmação do pedido e enviar a mensagem pelo WhatsApp.</p>
+      <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+    </div>
+  }
+</section>

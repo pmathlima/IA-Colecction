@@ -68,6 +68,7 @@ class ProductCreate(BaseModel):
     preco: float = Field(gt=0)
     categoria: str = Field(min_length=2, max_length=40)
     imagem: str = Field(min_length=1, max_length=255)
+    imagens: list[str] = Field(default_factory=list, max_length=8)
     estoque: int = Field(ge=0)
     destaque: bool = False
 
@@ -78,8 +79,26 @@ class ProductUpdate(BaseModel):
     preco: float | None = Field(default=None, gt=0)
     categoria: str | None = Field(default=None, min_length=2, max_length=40)
     imagem: str | None = Field(default=None, min_length=1, max_length=255)
+    imagens: list[str] | None = Field(default=None, max_length=8)
     estoque: int | None = Field(default=None, ge=0)
     destaque: bool | None = None
+
+
+class ImageUploadResponse(BaseModel):
+    url: str
+    filename: str
+
+
+class ImagesUploadResponse(BaseModel):
+    images: list[ImageUploadResponse]
+
+
+class ProductImageResponse(BaseModel):
+    id: int | None = None
+    url: str
+    alt: str
+    principal: bool
+    ordem: int
 
 
 class ProductResponse(BaseModel):
@@ -89,6 +108,8 @@ class ProductResponse(BaseModel):
     preco: float
     categoria: str
     imagem: str
+    imagens: list[str]
+    galeria: list[ProductImageResponse]
     estoque: int
     destaque: bool
     dataCriacao: str
@@ -161,7 +182,21 @@ def customer_to_response(customer) -> CustomerInfo:
     )
 
 
+def _product_image_urls(product) -> list[str]:
+    urls = [image.url for image in getattr(product, "images", []) if image.url]
+
+    if not urls and product.imagem:
+        urls = [product.imagem]
+
+    if product.imagem and product.imagem not in urls:
+        urls.insert(0, product.imagem)
+
+    return urls
+
+
 def product_to_response(product) -> ProductResponse:
+    image_urls = _product_image_urls(product)
+
     return ProductResponse(
         id=product.id,
         nome=product.nome,
@@ -169,6 +204,26 @@ def product_to_response(product) -> ProductResponse:
         preco=float(product.preco),
         categoria=product.categoria,
         imagem=product.imagem,
+        imagens=image_urls,
+        galeria=[
+            ProductImageResponse(
+                id=image.id,
+                url=image.url,
+                alt=image.alt,
+                principal=image.principal,
+                ordem=image.ordem,
+            )
+            for image in getattr(product, "images", [])
+        ]
+        or [
+            ProductImageResponse(
+                id=None,
+                url=product.imagem,
+                alt=product.nome,
+                principal=True,
+                ordem=0,
+            )
+        ],
         estoque=product.estoque,
         destaque=product.destaque,
         dataCriacao=product.data_criacao.isoformat(),

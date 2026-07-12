@@ -1,6 +1,6 @@
 <article class="product-card">
   <a [routerLink]="['/produtos', product().id]" class="product-card__image" aria-label="Ver detalhes do produto">
-    <img [src]="product().imagem" [alt]="product().nome" loading="lazy" />
+    <img [src]="product().imagem | imageUrl" [alt]="product().nome" loading="lazy" />
   </a>
 
   <div class="product-card__body">

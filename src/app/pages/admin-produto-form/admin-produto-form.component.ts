@@ -8,11 +8,12 @@ import { PRODUCT_CATEGORIES, ProductCategory } from '../../core/models/product.m
 import { AdminProductService } from '../../core/services/admin-product.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-admin-produto-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UiButtonComponent],
+  imports: [ReactiveFormsModule, RouterLink, UiButtonComponent, ImageUrlPipe],
   templateUrl: './admin-produto-form.component.html',
   styleUrl: './admin-produto-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,10 +22,12 @@ export class AdminProdutoFormComponent implements OnInit {
   protected readonly categories = PRODUCT_CATEGORIES;
   protected readonly isSaving = signal(false);
   protected readonly isLoading = signal(false);
+  protected readonly isUploadingImage = signal(false);
   protected readonly productId = signal<number | null>(null);
   protected readonly isEditing = computed(() => this.productId() !== null);
   protected readonly pageTitle = computed(() => (this.isEditing() ? 'Editar produto' : 'Novo produto'));
-  protected readonly previewImage = signal('assets/products/vestido-aurora.svg');
+  protected readonly galleryImages = signal<string[]>(['assets/products/vestido-aurora.svg']);
+  protected readonly mainImage = computed(() => this.galleryImages()[0] || 'assets/products/vestido-aurora.svg');
 
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -46,13 +49,94 @@ export class AdminProdutoFormComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     this.productForm.controls.imagem.valueChanges.subscribe((value) => {
-      this.previewImage.set(value || 'assets/products/vestido-aurora.svg');
+      const imageUrl = value?.trim();
+
+      if (!imageUrl) {
+        return;
+      }
+
+      this.addImagesToGallery([imageUrl], true);
     });
 
     if (!Number.isNaN(id) && id > 0) {
       this.productId.set(id);
       this.loadProduct(id);
     }
+  }
+
+  uploadImages(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+
+    if (!files.length) {
+      return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSizeInBytes = 5 * 1024 * 1024;
+    const maxImages = 8;
+
+    if (this.galleryImages().length + files.length > maxImages) {
+      this.feedbackService.show(`O produto pode ter no máximo ${maxImages} imagens.`, 'error');
+      input.value = '';
+      return;
+    }
+
+    const invalidFile = files.find((file) => !allowedTypes.includes(file.type));
+
+    if (invalidFile) {
+      this.feedbackService.show('Envie apenas imagens JPG, PNG ou WEBP.', 'error');
+      input.value = '';
+      return;
+    }
+
+    const oversizedFile = files.find((file) => file.size > maxSizeInBytes);
+
+    if (oversizedFile) {
+      this.feedbackService.show('Cada imagem deve ter no máximo 5 MB.', 'error');
+      input.value = '';
+      return;
+    }
+
+    this.isUploadingImage.set(true);
+
+    this.productService
+      .uploadProductImages(files)
+      .pipe(finalize(() => this.isUploadingImage.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.addImagesToGallery(response.images.map((image) => image.url));
+          this.feedbackService.show('Imagens enviadas com sucesso.', 'success');
+          input.value = '';
+        },
+        error: () => {
+          this.feedbackService.show('Não foi possível enviar as imagens.', 'error');
+          input.value = '';
+        },
+      });
+  }
+
+  setMainImage(imageUrl: string): void {
+    const images = this.galleryImages();
+
+    if (!images.includes(imageUrl)) {
+      return;
+    }
+
+    this.galleryImages.set([imageUrl, ...images.filter((image) => image !== imageUrl)]);
+    this.productForm.controls.imagem.setValue(imageUrl, { emitEvent: false });
+  }
+
+  removeImage(imageUrl: string): void {
+    const updatedImages = this.galleryImages().filter((image) => image !== imageUrl);
+
+    if (!updatedImages.length) {
+      this.feedbackService.show('O produto precisa ter pelo menos uma imagem.', 'error');
+      return;
+    }
+
+    this.galleryImages.set(updatedImages);
+    this.productForm.controls.imagem.setValue(updatedImages[0], { emitEvent: false });
   }
 
   submit(): void {
@@ -62,7 +146,12 @@ export class AdminProdutoFormComponent implements OnInit {
       return;
     }
 
-    const payload: AdminProductPayload = this.productForm.getRawValue();
+    const rawValue = this.productForm.getRawValue();
+    const payload: AdminProductPayload = {
+      ...rawValue,
+      imagem: this.mainImage(),
+      imagens: this.galleryImages(),
+    };
     const id = this.productId();
     const request$ = id
       ? this.productService.updateProduct(id, payload)
@@ -97,6 +186,8 @@ export class AdminProdutoFormComponent implements OnInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (product) => {
+          const images = product.imagens?.length ? product.imagens : [product.imagem];
+
           this.productForm.patchValue({
             nome: product.nome,
             descricao: product.descricao,
@@ -106,12 +197,34 @@ export class AdminProdutoFormComponent implements OnInit {
             estoque: product.estoque,
             destaque: product.destaque,
           });
-          this.previewImage.set(product.imagem);
+          this.galleryImages.set(images);
         },
         error: () => {
           this.feedbackService.show('Produto não encontrado.', 'error');
           void this.router.navigate(['/admin/produtos']);
         },
       });
+  }
+
+  private addImagesToGallery(imageUrls: string[], makeFirstImageMain = false): void {
+    const currentImages = this.galleryImages();
+    const mergedImages = [...currentImages];
+
+    imageUrls.forEach((imageUrl) => {
+      const cleanUrl = imageUrl.trim();
+
+      if (cleanUrl && !mergedImages.includes(cleanUrl)) {
+        mergedImages.push(cleanUrl);
+      }
+    });
+
+    if (makeFirstImageMain && imageUrls[0]) {
+      const mainImage = imageUrls[0].trim();
+      this.galleryImages.set([mainImage, ...mergedImages.filter((image) => image !== mainImage)]);
+      return;
+    }
+
+    this.galleryImages.set(mergedImages.slice(0, 8));
+    this.productForm.controls.imagem.setValue(this.galleryImages()[0], { emitEvent: false });
   }
 }

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
 from ..models import Product
@@ -20,7 +20,7 @@ def list_products(
     featured: bool | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
-    query = db.query(Product)
+    query = db.query(Product).options(joinedload(Product.images))
 
     if search:
         query = query.filter(func.lower(Product.nome).contains(search.strip().lower()))
@@ -45,7 +45,7 @@ def list_products(
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = db.get(Product, product_id)
+    product = db.query(Product).options(joinedload(Product.images)).filter(Product.id == product_id).first()
 
     if not product:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
