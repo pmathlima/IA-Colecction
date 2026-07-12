@@ -69,9 +69,12 @@
 
       <aside class="order-summary glass-card">
         <span>Resumo</span>
-        @for (item of cartService.items(); track item.produto.id) {
+        @for (item of cartService.items(); track cartService.itemKey(item)) {
           <div class="summary-item">
             <strong>{{ item.produto.nome }}</strong>
+            @if (cartService.variationLabel(item); as variationLabel) {
+              <small>{{ variationLabel }}</small>
+            }
             <small>{{ item.quantidade }} × {{ item.produto.preco | brlCurrency }}</small>
           </div>
         }

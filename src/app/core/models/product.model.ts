@@ -19,6 +19,15 @@ export interface ProductImage {
   ordem: number;
 }
 
+export interface ProductVariation {
+  id: number | null;
+  tamanho: string;
+  cor: string;
+  estoque: number;
+  sku?: string | null;
+  ativo: boolean;
+}
+
 export interface Product {
   id: number;
   nome: string;
@@ -31,6 +40,7 @@ export interface Product {
   estoque: number;
   destaque: boolean;
   dataCriacao: string;
+  variacoes: ProductVariation[];
 }
 
 export interface ProductFilters {

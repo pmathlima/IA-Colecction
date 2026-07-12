@@ -18,7 +18,7 @@
 
     <div class="product-card__actions">
       <a [routerLink]="['/produtos', product().id]" class="details-link">Ver detalhes</a>
-      <app-ui-button (click)="addToCart()">Adicionar</app-ui-button>
+      <app-ui-button (click)="addToCart()">{{ hasVariations() ? 'Escolher' : 'Adicionar' }}</app-ui-button>
     </div>
   </div>
 </article>

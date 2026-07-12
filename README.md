@@ -358,3 +358,47 @@ POST /api/admin/products/upload-images
 Essas rotas exigem autenticação administrativa via Bearer Token.
 
 > Observação: a pasta `backend/uploads/` fica fora do Git para evitar subir imagens reais no repositório. Na VPS, as imagens enviadas ficam salvas localmente no servidor.
+
+## Módulo de variações de produto
+
+Esta versão adiciona suporte a variações de produtos, importante para loja de roupas femininas.
+
+Agora cada produto pode ter estoque separado por combinação de:
+
+- Cor;
+- Tamanho;
+- SKU opcional;
+- Status ativo/inativo;
+- Estoque por variação.
+
+No painel administrativo, em `Admin > Produtos > Novo/Editar`, é possível cadastrar várias combinações, por exemplo:
+
+```txt
+Vestido Aurora Vinho
+├── Vinho / P - 5 unidades
+├── Vinho / M - 5 unidades
+├── Vinho / G - 4 unidades
+└── Marfim / M - 4 unidades
+```
+
+Na loja pública, a cliente escolhe cor e tamanho na página de detalhes antes de adicionar ao carrinho. O carrinho salva a variação escolhida e o checkout reduz o estoque correto no backend.
+
+### Endpoints adicionados/ajustados
+
+```txt
+POST   /api/admin/products/{id}/variations
+PUT    /api/admin/products/{id}/variations/{variation_id}
+DELETE /api/admin/products/{id}/variations/{variation_id}
+```
+
+O payload de pedido agora aceita `variacaoId` nos itens:
+
+```json
+{
+  "produtoId": 1,
+  "variacaoId": 2,
+  "quantidade": 1
+}
+```
+
+Se um produto possui variações ativas, a API exige que o pedido informe a variação escolhida.

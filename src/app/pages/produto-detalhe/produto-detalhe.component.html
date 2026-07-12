@@ -31,16 +31,56 @@
 
         <div class="price">{{ product.preco | brlCurrency }}</div>
 
-        <div class="stock" [class.stock--low]="product.estoque <= 8">
-          @if (product.estoque > 0) {
+        @if (hasVariations()) {
+          <section class="variation-picker">
+            <div>
+              <strong>Cor</strong>
+              <div class="option-list">
+                @for (color of availableColors(); track color) {
+                  <button
+                    type="button"
+                    class="option-chip"
+                    [class.option-chip--active]="selectedColor() === color"
+                    (click)="selectColor(color)"
+                  >
+                    {{ color }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div>
+              <strong>Tamanho</strong>
+              <div class="option-list">
+                @for (size of availableSizes(); track size) {
+                  <button
+                    type="button"
+                    class="option-chip"
+                    [class.option-chip--active]="selectedSize() === size"
+                    [disabled]="!isSizeAvailable(size)"
+                    (click)="selectSize(size)"
+                  >
+                    {{ size }}
+                  </button>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <div class="stock" [class.stock--low]="availableStock() <= 8 && availableStock() > 0">
+          @if (hasVariations() && !selectedVariation()) {
+            <span>Selecione cor e tamanho</span>
+            <strong>{{ product.estoque }} unidades no total</strong>
+          } @else if (availableStock() > 0) {
             <span>Disponível em estoque</span>
-            <strong>{{ product.estoque }} unidades</strong>
+            <strong>{{ availableStock() }} unidades</strong>
           } @else {
             <span>Produto indisponível</span>
           }
         </div>
 
-        <app-ui-button [disabled]="product.estoque === 0" (click)="addToCart()">
+        <app-ui-button [disabled]="!canAddToCart()" (click)="addToCart()">
           Adicionar ao carrinho
         </app-ui-button>
       </article>

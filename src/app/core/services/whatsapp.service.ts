@@ -7,7 +7,11 @@ import { Order } from '../models/order.model';
 export class WhatsappService {
   buildOrderConfirmationMessage(order: Order): string {
     const productLines = order.itens
-      .map((item) => `- ${item.nome} | Qtd: ${item.quantidade} | Subtotal: ${this.formatCurrency(item.subtotal)}`)
+      .map((item) => {
+        const variation = [item.cor, item.tamanho].filter(Boolean).join(' / ');
+        const variationText = variation ? ` | ${variation}` : '';
+        return `- ${item.nome}${variationText} | Qtd: ${item.quantidade} | Subtotal: ${this.formatCurrency(item.subtotal)}`;
+      })
       .join('\n');
 
     return [

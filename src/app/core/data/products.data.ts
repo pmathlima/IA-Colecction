@@ -15,6 +15,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 18,
     destaque: true,
+    variacoes: [],
     dataCriacao: '2026-07-01T10:00:00.000Z',
   },
   {
@@ -31,6 +32,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 26,
     destaque: true,
+    variacoes: [],
     dataCriacao: '2026-07-02T10:00:00.000Z',
   },
   {
@@ -47,6 +49,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 12,
     destaque: true,
+    variacoes: [],
     dataCriacao: '2026-07-03T10:00:00.000Z',
   },
   {
@@ -63,6 +66,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 20,
     destaque: false,
+    variacoes: [],
     dataCriacao: '2026-07-04T10:00:00.000Z',
   },
   {
@@ -79,6 +83,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 10,
     destaque: true,
+    variacoes: [],
     dataCriacao: '2026-07-05T10:00:00.000Z',
   },
   {
@@ -95,6 +100,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 16,
     destaque: false,
+    variacoes: [],
     dataCriacao: '2026-07-06T10:00:00.000Z',
   },
   {
@@ -111,6 +117,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 8,
     destaque: true,
+    variacoes: [],
     dataCriacao: '2026-07-07T10:00:00.000Z',
   },
   {
@@ -127,6 +134,7 @@ export const PRODUCTS_DATA: Product[] = [
     ],
     estoque: 30,
     destaque: false,
+    variacoes: [],
     dataCriacao: '2026-07-08T10:00:00.000Z',
   },
 ];

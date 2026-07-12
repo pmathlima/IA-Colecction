@@ -78,7 +78,12 @@
           <tbody>
             @for (item of currentOrder.itens; track item.produtoId) {
               <tr>
-                <td>{{ item.nome }}</td>
+                <td>
+                  <strong>{{ item.nome }}</strong>
+                  @if (item.cor || item.tamanho) {
+                    <small>{{ item.cor }} / {{ item.tamanho }}</small>
+                  }
+                </td>
                 <td>{{ item.precoUnitario | brlCurrency }}</td>
                 <td>{{ item.quantidade }}</td>
                 <td>{{ item.subtotal | brlCurrency }}</td>

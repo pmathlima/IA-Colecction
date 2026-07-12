@@ -216,3 +216,136 @@
     color: var(--color-danger);
   }
 }
+
+.variation-manager {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.variation-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  div {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  strong {
+    color: var(--color-primary-strong);
+  }
+
+  span {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+.variation-add,
+.variation-remove {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0.65rem 0.85rem;
+}
+
+.variation-add {
+  background: var(--color-primary);
+  color: #fffdf8;
+}
+
+.variation-remove {
+  align-self: end;
+  background: rgba(185, 28, 28, 0.09);
+  color: var(--color-danger);
+}
+
+.variation-total,
+.variation-empty {
+  border-radius: var(--radius-sm);
+  background: rgba(120, 14, 45, 0.07);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+
+  strong {
+    color: var(--color-primary);
+  }
+}
+
+.variation-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.variation-row {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr 0.8fr 1.2fr auto auto;
+  gap: 0.65rem;
+  align-items: end;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fffaf1;
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  span {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+
+  input[type='text'],
+  input[type='number'] {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: #fffdf8;
+    color: var(--color-text);
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+.variation-active {
+  align-items: center;
+  display: flex !important;
+  gap: 0.45rem !important;
+  padding-bottom: 0.7rem;
+
+  input {
+    accent-color: var(--color-primary);
+    height: 18px;
+    width: 18px;
+  }
+}
+
+@media (max-width: 980px) {
+  .variation-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .variation-manager__header,
+  .variation-row {
+    grid-template-columns: 1fr;
+  }
+
+  .variation-active,
+  .variation-remove {
+    align-self: start;
+  }
+}

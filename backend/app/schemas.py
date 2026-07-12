@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from decimal import Decimal
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -24,8 +23,6 @@ class AdminLoginResponse(BaseModel):
     accessToken: str
     tokenType: str = "bearer"
     admin: AdminInfo
-
-
 
 
 class CustomerRegisterRequest(BaseModel):
@@ -62,6 +59,31 @@ class CustomerLoginResponse(BaseModel):
     cliente: CustomerInfo
 
 
+class ProductVariationCreate(BaseModel):
+    tamanho: str = Field(min_length=1, max_length=20)
+    cor: str = Field(min_length=2, max_length=40)
+    estoque: int = Field(ge=0)
+    sku: str | None = Field(default=None, max_length=80)
+    ativo: bool = True
+
+
+class ProductVariationUpdate(BaseModel):
+    tamanho: str | None = Field(default=None, min_length=1, max_length=20)
+    cor: str | None = Field(default=None, min_length=2, max_length=40)
+    estoque: int | None = Field(default=None, ge=0)
+    sku: str | None = Field(default=None, max_length=80)
+    ativo: bool | None = None
+
+
+class ProductVariationResponse(BaseModel):
+    id: int | None = None
+    tamanho: str
+    cor: str
+    estoque: int
+    sku: str | None = None
+    ativo: bool
+
+
 class ProductCreate(BaseModel):
     nome: str = Field(min_length=2, max_length=120)
     descricao: str = Field(min_length=10)
@@ -71,6 +93,7 @@ class ProductCreate(BaseModel):
     imagens: list[str] = Field(default_factory=list, max_length=8)
     estoque: int = Field(ge=0)
     destaque: bool = False
+    variacoes: list[ProductVariationCreate] = Field(default_factory=list, max_length=80)
 
 
 class ProductUpdate(BaseModel):
@@ -82,6 +105,7 @@ class ProductUpdate(BaseModel):
     imagens: list[str] | None = Field(default=None, max_length=8)
     estoque: int | None = Field(default=None, ge=0)
     destaque: bool | None = None
+    variacoes: list[ProductVariationCreate] | None = Field(default=None, max_length=80)
 
 
 class ImageUploadResponse(BaseModel):
@@ -113,6 +137,7 @@ class ProductResponse(BaseModel):
     estoque: int
     destaque: bool
     dataCriacao: str
+    variacoes: list[ProductVariationResponse]
 
 
 class CustomerData(BaseModel):
@@ -126,6 +151,7 @@ class CustomerData(BaseModel):
 class OrderItemCreate(BaseModel):
     produtoId: int = Field(gt=0)
     quantidade: int = Field(gt=0)
+    variacaoId: int | None = Field(default=None, gt=0)
 
 
 class OrderCreate(BaseModel):
@@ -135,7 +161,11 @@ class OrderCreate(BaseModel):
 
 class OrderItemResponse(BaseModel):
     produtoId: int
+    variacaoId: int | None = None
     nome: str
+    tamanho: str | None = None
+    cor: str | None = None
+    sku: str | None = None
     precoUnitario: float
     quantidade: int
     subtotal: float
@@ -194,8 +224,20 @@ def _product_image_urls(product) -> list[str]:
     return urls
 
 
+def _variation_to_response(variation) -> ProductVariationResponse:
+    return ProductVariationResponse(
+        id=variation.id,
+        tamanho=variation.tamanho,
+        cor=variation.cor,
+        estoque=variation.estoque,
+        sku=variation.sku,
+        ativo=variation.ativo,
+    )
+
+
 def product_to_response(product) -> ProductResponse:
     image_urls = _product_image_urls(product)
+    variations = list(getattr(product, "variations", []))
 
     return ProductResponse(
         id=product.id,
@@ -227,6 +269,7 @@ def product_to_response(product) -> ProductResponse:
         estoque=product.estoque,
         destaque=product.destaque,
         dataCriacao=product.data_criacao.isoformat(),
+        variacoes=[_variation_to_response(variation) for variation in variations],
     )
 
 
@@ -243,7 +286,11 @@ def order_to_response(order) -> OrderResponse:
         itens=[
             OrderItemResponse(
                 produtoId=item.product_id,
+                variacaoId=item.variation_id,
                 nome=item.product_name,
+                tamanho=item.variation_size,
+                cor=item.variation_color,
+                sku=item.variation_sku,
                 precoUnitario=float(item.unit_price),
                 quantidade=item.quantity,
                 subtotal=float(item.subtotal),

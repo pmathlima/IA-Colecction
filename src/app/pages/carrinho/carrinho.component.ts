@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { CartItem } from '../../core/models/cart-item.model';
 import { CartService } from '../../core/services/cart.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { CartSummaryComponent } from '../../shared/components/cart-summary/cart-summary.component';
@@ -20,12 +21,12 @@ export class CarrinhoComponent {
   protected readonly cartService = inject(CartService);
   private readonly feedbackService = inject(FeedbackService);
 
-  updateQuantity(productId: number, quantity: number): void {
-    this.cartService.updateQuantity(productId, quantity);
+  updateQuantity(item: CartItem, quantity: number): void {
+    this.cartService.updateQuantity(item.produto.id, quantity, item.variacao?.id ?? null);
   }
 
-  removeItem(productId: number, productName: string): void {
-    this.cartService.removeProduct(productId);
-    this.feedbackService.show(`${productName} removido do carrinho.`, 'info');
+  removeItem(item: CartItem): void {
+    this.cartService.removeProduct(item.produto.id, item.variacao?.id ?? null);
+    this.feedbackService.show(`${item.produto.nome} removido do carrinho.`, 'info');
   }
 }

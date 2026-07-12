@@ -80,3 +80,15 @@
     height: 210px;
   }
 }
+
+.variation-label {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 0.45rem !important;
+  border-radius: 999px;
+  background: rgba(120, 14, 45, 0.1);
+  color: var(--color-primary) !important;
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 0.35rem 0.65rem;
+}

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AdminProductPayload } from '../../core/models/admin.model';
-import { PRODUCT_CATEGORIES, ProductCategory } from '../../core/models/product.model';
+import { PRODUCT_CATEGORIES, ProductCategory, ProductVariation } from '../../core/models/product.model';
 import { AdminProductService } from '../../core/services/admin-product.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
@@ -28,6 +28,12 @@ export class AdminProdutoFormComponent implements OnInit {
   protected readonly pageTitle = computed(() => (this.isEditing() ? 'Editar produto' : 'Novo produto'));
   protected readonly galleryImages = signal<string[]>(['assets/products/vestido-aurora.svg']);
   protected readonly mainImage = computed(() => this.galleryImages()[0] || 'assets/products/vestido-aurora.svg');
+  protected readonly variations = signal<ProductVariation[]>([]);
+  protected readonly variationStockTotal = computed(() =>
+    this.variations()
+      .filter((variation) => variation.ativo)
+      .reduce((total, variation) => total + Number(variation.estoque || 0), 0),
+  );
 
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -139,6 +145,39 @@ export class AdminProdutoFormComponent implements OnInit {
     this.productForm.controls.imagem.setValue(updatedImages[0], { emitEvent: false });
   }
 
+  addVariation(): void {
+    this.variations.set([
+      ...this.variations(),
+      {
+        id: null,
+        cor: 'Vinho',
+        tamanho: 'M',
+        estoque: 0,
+        sku: null,
+        ativo: true,
+      },
+    ]);
+  }
+
+  updateVariation(index: number, field: keyof ProductVariation, value: string | number | boolean): void {
+    this.variations.set(
+      this.variations().map((variation, currentIndex) => {
+        if (currentIndex !== index) {
+          return variation;
+        }
+
+        return {
+          ...variation,
+          [field]: field === 'estoque' ? Number(value) : value,
+        };
+      }),
+    );
+  }
+
+  removeVariation(index: number): void {
+    this.variations.set(this.variations().filter((_, currentIndex) => currentIndex !== index));
+  }
+
   submit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -146,11 +185,18 @@ export class AdminProdutoFormComponent implements OnInit {
       return;
     }
 
+    if (!this.validateVariations()) {
+      return;
+    }
+
     const rawValue = this.productForm.getRawValue();
+    const variations = this.normalizedVariations();
     const payload: AdminProductPayload = {
       ...rawValue,
+      estoque: variations.length ? this.variationStockTotal() : rawValue.estoque,
       imagem: this.mainImage(),
       imagens: this.galleryImages(),
+      variacoes: variations,
     };
     const id = this.productId();
     const request$ = id
@@ -198,6 +244,7 @@ export class AdminProdutoFormComponent implements OnInit {
             destaque: product.destaque,
           });
           this.galleryImages.set(images);
+          this.variations.set(product.variacoes ?? []);
         },
         error: () => {
           this.feedbackService.show('Produto não encontrado.', 'error');
@@ -226,5 +273,37 @@ export class AdminProdutoFormComponent implements OnInit {
 
     this.galleryImages.set(mergedImages.slice(0, 8));
     this.productForm.controls.imagem.setValue(this.galleryImages()[0], { emitEvent: false });
+  }
+
+  private validateVariations(): boolean {
+    const variations = this.normalizedVariations();
+    const hasEmptyFields = variations.some((variation) => !variation.cor || !variation.tamanho || variation.estoque < 0);
+
+    if (hasEmptyFields) {
+      this.feedbackService.show('Preencha cor, tamanho e estoque das variações corretamente.', 'error');
+      return false;
+    }
+
+    const keys = variations.map((variation) => `${variation.cor.toLowerCase()}-${variation.tamanho.toLowerCase()}`);
+    const hasDuplicates = new Set(keys).size !== keys.length;
+
+    if (hasDuplicates) {
+      this.feedbackService.show('Não repita a mesma combinação de cor e tamanho.', 'error');
+      return false;
+    }
+
+    return true;
+  }
+
+  private normalizedVariations(): ProductVariation[] {
+    return this.variations()
+      .map((variation) => ({
+        ...variation,
+        cor: variation.cor.trim(),
+        tamanho: variation.tamanho.trim(),
+        sku: variation.sku?.trim() || null,
+        estoque: Number(variation.estoque || 0),
+      }))
+      .filter((variation) => variation.cor && variation.tamanho);
   }
 }

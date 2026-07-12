@@ -9,18 +9,21 @@ from sqlalchemy.orm import Session, joinedload
 
 from ..auth import ADMIN_ACCESS_TOKEN, require_admin, validate_admin_credentials
 from ..database import get_db
-from ..models import Order, Product, ProductImage
+from ..models import Order, Product, ProductImage, ProductVariation
 from ..schemas import (
     AdminInfo,
     AdminLoginRequest,
     AdminLoginResponse,
     ImageUploadResponse,
     ImagesUploadResponse,
+    OrderResponse,
+    OrderStatusUpdate,
     ProductCreate,
     ProductResponse,
     ProductUpdate,
-    OrderResponse,
-    OrderStatusUpdate,
+    ProductVariationCreate,
+    ProductVariationResponse,
+    ProductVariationUpdate,
     order_to_response,
     product_to_response,
 )
@@ -68,6 +71,47 @@ def _sync_product_images(product: Product, image_urls: list[str]) -> None:
     product.imagem = image_urls[0]
 
 
+def _sanitize_variation_payload(variation: ProductVariationCreate | ProductVariationUpdate) -> dict:
+    data = variation.model_dump(exclude_unset=True)
+
+    for field in ["tamanho", "cor", "sku"]:
+        if field in data and isinstance(data[field], str):
+            data[field] = data[field].strip()
+
+    if data.get("sku") == "":
+        data["sku"] = None
+
+    return data
+
+
+def _sync_product_stock_from_variations(product: Product) -> None:
+    active_variations = [variation for variation in product.variations if variation.ativo]
+
+    if active_variations:
+        product.estoque = sum(variation.estoque for variation in active_variations)
+
+
+def _sync_product_variations(product: Product, variations_payload: list[ProductVariationCreate]) -> None:
+    product.variations.clear()
+
+    for variation_payload in variations_payload:
+        data = _sanitize_variation_payload(variation_payload)
+        product.variations.append(ProductVariation(**data))
+
+    _sync_product_stock_from_variations(product)
+
+
+def _variation_to_response(variation: ProductVariation) -> ProductVariationResponse:
+    return ProductVariationResponse(
+        id=variation.id,
+        tamanho=variation.tamanho,
+        cor=variation.cor,
+        estoque=variation.estoque,
+        sku=variation.sku,
+        ativo=variation.ativo,
+    )
+
+
 async def _save_uploaded_image(file: UploadFile) -> ImageUploadResponse:
     if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise HTTPException(
@@ -112,7 +156,7 @@ def admin_login(credentials: AdminLoginRequest) -> AdminLoginResponse:
 def admin_list_products(db: Session = Depends(get_db)):
     products = (
         db.query(Product)
-        .options(joinedload(Product.images))
+        .options(joinedload(Product.images), joinedload(Product.variations))
         .order_by(Product.data_criacao.desc())
         .all()
     )
@@ -140,7 +184,7 @@ async def admin_upload_product_images(files: list[UploadFile] = File(...)) -> Im
 def admin_get_product(product_id: int, db: Session = Depends(get_db)):
     product = (
         db.query(Product)
-        .options(joinedload(Product.images))
+        .options(joinedload(Product.images), joinedload(Product.variations))
         .filter(Product.id == product_id)
         .first()
     )
@@ -165,6 +209,7 @@ def admin_create_product(payload: ProductCreate, db: Session = Depends(get_db)):
         destaque=payload.destaque,
     )
     _sync_product_images(product, image_urls)
+    _sync_product_variations(product, payload.variacoes)
 
     db.add(product)
     db.commit()
@@ -177,7 +222,7 @@ def admin_create_product(payload: ProductCreate, db: Session = Depends(get_db)):
 def admin_update_product(product_id: int, payload: ProductUpdate, db: Session = Depends(get_db)):
     product = (
         db.query(Product)
-        .options(joinedload(Product.images))
+        .options(joinedload(Product.images), joinedload(Product.variations))
         .filter(Product.id == product_id)
         .first()
     )
@@ -187,6 +232,7 @@ def admin_update_product(product_id: int, payload: ProductUpdate, db: Session = 
 
     data = payload.model_dump(exclude_unset=True)
     images_payload = data.pop("imagens", None)
+    variations_payload = data.pop("variacoes", None)
 
     for field, value in data.items():
         if isinstance(value, str):
@@ -196,6 +242,11 @@ def admin_update_product(product_id: int, payload: ProductUpdate, db: Session = 
     if images_payload is not None or "imagem" in data:
         image_urls = _normalize_image_urls(product.imagem, images_payload)
         _sync_product_images(product, image_urls)
+
+    if variations_payload is not None:
+        _sync_product_variations(product, [ProductVariationCreate(**variation) for variation in variations_payload])
+    else:
+        _sync_product_stock_from_variations(product)
 
     db.commit()
     db.refresh(product)
@@ -219,6 +270,85 @@ def admin_delete_product(product_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_409_CONFLICT,
             detail="Não foi possível remover o produto porque ele pode estar vinculado a um pedido.",
         ) from exc
+
+
+@router.post(
+    "/products/{product_id}/variations",
+    response_model=ProductVariationResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_admin)],
+)
+def admin_create_product_variation(product_id: int, payload: ProductVariationCreate, db: Session = Depends(get_db)):
+    product = db.query(Product).options(joinedload(Product.variations)).filter(Product.id == product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Produto não encontrado.")
+
+    variation = ProductVariation(product_id=product.id, **_sanitize_variation_payload(payload))
+    product.variations.append(variation)
+    _sync_product_stock_from_variations(product)
+
+    db.commit()
+    db.refresh(variation)
+    return _variation_to_response(variation)
+
+
+@router.put(
+    "/products/{product_id}/variations/{variation_id}",
+    response_model=ProductVariationResponse,
+    dependencies=[Depends(require_admin)],
+)
+def admin_update_product_variation(
+    product_id: int,
+    variation_id: int,
+    payload: ProductVariationUpdate,
+    db: Session = Depends(get_db),
+):
+    variation = (
+        db.query(ProductVariation)
+        .join(Product)
+        .options(joinedload(ProductVariation.product).joinedload(Product.variations))
+        .filter(ProductVariation.id == variation_id, ProductVariation.product_id == product_id)
+        .first()
+    )
+
+    if not variation:
+        raise HTTPException(status_code=404, detail="Variação não encontrada.")
+
+    data = _sanitize_variation_payload(payload)
+
+    for field, value in data.items():
+        setattr(variation, field, value)
+
+    _sync_product_stock_from_variations(variation.product)
+    db.commit()
+    db.refresh(variation)
+
+    return _variation_to_response(variation)
+
+
+@router.delete(
+    "/products/{product_id}/variations/{variation_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_admin)],
+)
+def admin_delete_product_variation(product_id: int, variation_id: int, db: Session = Depends(get_db)):
+    variation = (
+        db.query(ProductVariation)
+        .join(Product)
+        .options(joinedload(ProductVariation.product).joinedload(Product.variations))
+        .filter(ProductVariation.id == variation_id, ProductVariation.product_id == product_id)
+        .first()
+    )
+
+    if not variation:
+        raise HTTPException(status_code=404, detail="Variação não encontrada.")
+
+    product = variation.product
+    db.delete(variation)
+    db.flush()
+    _sync_product_stock_from_variations(product)
+    db.commit()
 
 
 @router.get("/orders", response_model=list[OrderResponse], dependencies=[Depends(require_admin)])

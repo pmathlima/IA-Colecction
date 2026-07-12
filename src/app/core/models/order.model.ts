@@ -20,7 +20,6 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   CONFIRMADO: 'Confirmado',
 };
 
-
 export interface CustomerData {
   nome: string;
   email: string;
@@ -31,7 +30,11 @@ export interface CustomerData {
 
 export interface OrderItemResponse {
   produtoId: number;
+  variacaoId?: number | null;
   nome: string;
+  tamanho?: string | null;
+  cor?: string | null;
+  sku?: string | null;
   precoUnitario: number;
   quantidade: number;
   subtotal: number;

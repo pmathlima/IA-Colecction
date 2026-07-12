@@ -27,6 +27,11 @@ class Product(Base):
         cascade="all, delete-orphan",
         order_by="ProductImage.ordem",
     )
+    variations: Mapped[list["ProductVariation"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        order_by="ProductVariation.id",
+    )
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
 
 
@@ -42,6 +47,22 @@ class ProductImage(Base):
     criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     product: Mapped[Product] = relationship(back_populates="images")
+
+
+class ProductVariation(Base):
+    __tablename__ = "product_variations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False, index=True)
+    tamanho: Mapped[str] = mapped_column(String(20), nullable=False)
+    cor: Mapped[str] = mapped_column(String(40), nullable=False)
+    estoque: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    sku: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    ativo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    product: Mapped[Product] = relationship(back_populates="variations")
+    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="variation")
 
 
 class Customer(Base):
@@ -83,6 +104,10 @@ class OrderItem(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"), nullable=False, index=True)
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)
+    variation_id: Mapped[int | None] = mapped_column(ForeignKey("product_variations.id"), nullable=True)
+    variation_size: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    variation_color: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    variation_sku: Mapped[str | None] = mapped_column(String(80), nullable=True)
     product_name: Mapped[str] = mapped_column(String(120), nullable=False)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -90,6 +115,7 @@ class OrderItem(Base):
 
     order: Mapped[Order] = relationship(back_populates="items")
     product: Mapped[Product] = relationship(back_populates="order_items")
+    variation: Mapped[ProductVariation | None] = relationship(back_populates="order_items")
 
 
 class ContactMessage(Base):

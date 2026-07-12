@@ -8,13 +8,16 @@
   @if (cartService.items().length > 0) {
     <div class="cart-layout">
       <div class="cart-list">
-        @for (item of cartService.items(); track item.produto.id) {
+        @for (item of cartService.items(); track cartService.itemKey(item)) {
           <article class="cart-item glass-card">
             <img [src]="item.produto.imagem | imageUrl" [alt]="item.produto.nome" />
 
             <div class="cart-item__info">
               <span>{{ item.produto.categoria }}</span>
               <h2>{{ item.produto.nome }}</h2>
+              @if (cartService.variationLabel(item); as variationLabel) {
+                <p class="variation-label">{{ variationLabel }}</p>
+              }
               <p>{{ item.produto.preco | brlCurrency }} cada</p>
             </div>
 
@@ -23,9 +26,9 @@
               <input
                 type="number"
                 min="1"
-                [max]="item.produto.estoque"
+                [max]="cartService.getAvailableStock(item.produto, item.variacao)"
                 [value]="item.quantidade"
-                (change)="updateQuantity(item.produto.id, +$any($event.target).value)"
+                (change)="updateQuantity(item, +$any($event.target).value)"
               />
             </label>
 
@@ -34,7 +37,7 @@
               <strong>{{ cartService.getSubtotal(item) | brlCurrency }}</strong>
             </div>
 
-            <app-ui-button variant="danger" (click)="removeItem(item.produto.id, item.produto.nome)">
+            <app-ui-button variant="danger" (click)="removeItem(item)">
               Remover
             </app-ui-button>
           </article>

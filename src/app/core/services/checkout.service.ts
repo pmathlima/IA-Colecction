@@ -17,6 +17,7 @@ export class CheckoutService {
       cliente: customer,
       itens: items.map((item) => ({
         produtoId: item.produto.id,
+        variacaoId: item.variacao?.id ?? null,
         quantidade: item.quantidade,
       })),
     };

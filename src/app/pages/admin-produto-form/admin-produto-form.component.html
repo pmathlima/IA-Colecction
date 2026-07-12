@@ -50,10 +50,10 @@
           </div>
 
           <div class="form-row">
-            <label for="estoque">Estoque</label>
+            <label for="estoque">Estoque geral</label>
             <input id="estoque" type="number" min="0" step="1" formControlName="estoque" />
             @if (hasError('estoque')) {
-              <small>Informe a quantidade em estoque.</small>
+              <small>Informe a quantidade em estoque. Se usar variações, esse valor será calculado automaticamente.</small>
             }
           </div>
         </div>
@@ -104,6 +104,85 @@
             }
           </div>
         </div>
+
+
+        <section class="variation-manager">
+          <div class="variation-manager__header">
+            <div>
+              <strong>Variações de tamanho, cor e estoque</strong>
+              <span>Use para roupas e calçados com estoque separado por tamanho/cor.</span>
+            </div>
+            <button type="button" class="variation-add" (click)="addVariation()">Adicionar variação</button>
+          </div>
+
+          @if (variations().length > 0) {
+            <div class="variation-total">
+              Estoque total pelas variações: <strong>{{ variationStockTotal() }}</strong> unidades
+            </div>
+
+            <div class="variation-list">
+              @for (variation of variations(); track $index) {
+                <article class="variation-row">
+                  <label>
+                    <span>Cor</span>
+                    <input
+                      type="text"
+                      [value]="variation.cor"
+                      placeholder="Vinho"
+                      (input)="updateVariation($index, 'cor', $any($event.target).value)"
+                    />
+                  </label>
+
+                  <label>
+                    <span>Tamanho</span>
+                    <input
+                      type="text"
+                      [value]="variation.tamanho"
+                      placeholder="P, M, G, 36..."
+                      (input)="updateVariation($index, 'tamanho', $any($event.target).value)"
+                    />
+                  </label>
+
+                  <label>
+                    <span>Estoque</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      [value]="variation.estoque"
+                      (input)="updateVariation($index, 'estoque', +$any($event.target).value)"
+                    />
+                  </label>
+
+                  <label>
+                    <span>SKU opcional</span>
+                    <input
+                      type="text"
+                      [value]="variation.sku || ''"
+                      placeholder="IA-VEST-M-VINHO"
+                      (input)="updateVariation($index, 'sku', $any($event.target).value)"
+                    />
+                  </label>
+
+                  <label class="variation-active">
+                    <input
+                      type="checkbox"
+                      [checked]="variation.ativo"
+                      (change)="updateVariation($index, 'ativo', $any($event.target).checked)"
+                    />
+                    <span>Ativa</span>
+                  </label>
+
+                  <button type="button" class="variation-remove" (click)="removeVariation($index)">Remover</button>
+                </article>
+              }
+            </div>
+          } @else {
+            <p class="variation-empty">
+              Nenhuma variação cadastrada. Sem variações, o produto usa o campo de estoque geral acima.
+            </p>
+          }
+        </section>
 
         <label class="check-row">
           <input type="checkbox" formControlName="destaque" />

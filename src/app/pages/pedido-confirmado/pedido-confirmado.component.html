@@ -57,6 +57,9 @@
             <article class="item-row">
               <div>
                 <strong>{{ item.nome }}</strong>
+                @if (item.cor || item.tamanho) {
+                  <small>{{ item.cor }} / {{ item.tamanho }}</small>
+                }
                 <small>{{ item.quantidade }} × {{ item.precoUnitario | brlCurrency }}</small>
               </div>
               <span>{{ item.subtotal | brlCurrency }}</span>

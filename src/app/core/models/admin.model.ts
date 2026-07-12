@@ -1,4 +1,4 @@
-import { Product, ProductCategory } from './product.model';
+import { Product, ProductCategory, ProductVariation } from './product.model';
 
 export interface AdminLoginPayload {
   email: string;
@@ -23,6 +23,7 @@ export interface AdminProductPayload {
   imagens: string[];
   estoque: number;
   destaque: boolean;
+  variacoes: ProductVariation[];
 }
 
 export type AdminProductResponse = Product;
