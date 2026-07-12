@@ -7,4 +7,5 @@ backend/.venv/
 backend/__pycache__/
 backend/app/__pycache__/
 backend/app/routers/__pycache__/
-backend/ia_colecction.db
+backend/*.db
+backend/*.sqlite3

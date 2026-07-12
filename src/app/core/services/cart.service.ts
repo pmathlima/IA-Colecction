@@ -3,7 +3,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/product.model';
 
-const CART_STORAGE_KEY = 'ia-colecction-cart';
+const CART_STORAGE_KEY = 'ia-collection-cart';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {

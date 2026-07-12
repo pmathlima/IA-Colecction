@@ -6,7 +6,7 @@
   padding: 1.4rem;
 
   > span {
-    color: var(--color-secondary);
+    color: var(--color-primary);
     font-size: 0.8rem;
     font-weight: 900;
     text-transform: uppercase;
@@ -15,6 +15,7 @@
 
   h2 {
     margin: 0;
+    color: var(--color-primary-strong);
     font-size: 2rem;
   }
 

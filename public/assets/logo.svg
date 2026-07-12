@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="IA Colecction">
-  <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#38bdf8"/>
-      <stop offset="0.55" stop-color="#7c3aed"/>
-      <stop offset="1" stop-color="#f8c95c"/>
-    </linearGradient>
-  </defs>
-  <rect width="120" height="120" rx="28" fill="#090a0f"/>
-  <rect x="10" y="10" width="100" height="100" rx="24" fill="url(#g)"/>
-  <text x="60" y="73" text-anchor="middle" font-size="42" font-family="Arial, sans-serif" font-weight="900" fill="#020617">IA</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#fbf4e6"/><path d="M42 32h28L52 96H24L42 32Zm35 0h18l28 64H94l-5-15H68l-5 15H36l41-64Zm5 27-8 22h16l-8-22Z" fill="#780e2d"/><path d="M42 30c8-18 26-17 34-4-14 0-24 8-31 20-4-5-5-10-3-16Z" fill="none" stroke="#780e2d" stroke-width="5" stroke-linecap="round"/></svg>

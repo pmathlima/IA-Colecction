@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-label="Vestido Aurora Vinho">
+  <defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#fffaf1"/>
+    <stop offset="100%" stop-color="#f4dfc8"/>
+  </linearGradient>
+  <linearGradient id="wine" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#9a2044"/>
+    <stop offset="100%" stop-color="#5c0820"/>
+  </linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#f1d39a"/>
+    <stop offset="100%" stop-color="#b9803e"/>
+  </linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#5c0820" flood-opacity="0.18"/>
+  </filter>
+</defs>
+  <rect width="900" height="700" rx="44" fill="url(#bg)"/>
+  <circle cx="760" cy="120" r="150" fill="#780e2d" opacity="0.08"/>
+  <circle cx="150" cy="610" r="180" fill="#d4a64f" opacity="0.13"/>
+  <path d="M92 122 C220 42 337 44 448 116 C560 190 665 165 800 88" fill="none" stroke="#780e2d" opacity="0.08" stroke-width="26"/>
+  
+  <g filter="url(#shadow)">
+    <path d="M385 125 C410 102 490 102 515 125 L548 205 L508 224 L492 188 L565 540 C516 572 384 572 335 540 L408 188 L392 224 L352 205 Z" fill="url(#wine)"/>
+    <path d="M414 130 C426 165 474 165 486 130" fill="none" stroke="#f7d7a8" stroke-width="8" stroke-linecap="round"/>
+    <path d="M384 365 C425 390 481 390 516 365" fill="none" stroke="#f6d09c" stroke-width="6" opacity="0.85"/>
+    <circle cx="450" cy="256" r="8" fill="#f2d090"/>
+    <circle cx="450" cy="300" r="7" fill="#f2d090"/>
+  </g>
+
+  <text x="450" y="640" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-weight="700" fill="#5c0820">IA Collection</text>
+</svg>

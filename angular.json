@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ia-colecction": {
+    "ia-collection": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -18,7 +18,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/ia-colecction",
+            "outputPath": "dist/ia-collection",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -61,10 +61,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ia-colecction:build:production"
+              "buildTarget": "ia-collection:build:production"
             },
             "development": {
-              "buildTarget": "ia-colecction:build:development"
+              "buildTarget": "ia-collection:build:development"
             }
           },
           "defaultConfiguration": "development"

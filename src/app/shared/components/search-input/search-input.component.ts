@@ -11,6 +11,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class SearchInputComponent {
   readonly value = input('');
-  readonly placeholder = input('Buscar produto...');
+  readonly placeholder = input('Buscar peça feminina...');
   readonly valueChange = output<string>();
 }
