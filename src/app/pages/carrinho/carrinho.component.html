@@ -1,60 +1,167 @@
 <section class="page container">
-  <header class="page-header">
+  <header class="page-header cart-header">
     <span>Carrinho</span>
+
     <h1>Seu pedido</h1>
-    <p>Revise os itens selecionados, altere quantidades e avance para o checkout simulado.</p>
+
+    <p>
+      Revise os produtos selecionados, ajuste as quantidades e avance para
+      finalizar sua compra com segurança.
+    </p>
   </header>
 
   @if (cartService.items().length > 0) {
     <div class="cart-layout">
-      <div class="cart-list">
+      <section class="cart-list" aria-label="Itens do carrinho">
+        <div class="cart-list__top">
+          <div>
+            <strong>{{ cartService.totalItems() }} item(ns) no carrinho</strong>
+            <span>Confira os detalhes antes de continuar.</span>
+          </div>
+
+          <button type="button" class="clear-cart" (click)="clearCart()">
+            Limpar carrinho
+          </button>
+        </div>
+
         @for (item of cartService.items(); track cartService.itemKey(item)) {
           <article class="cart-item glass-card">
-            <img [src]="item.produto.imagem | imageUrl" [alt]="item.produto.nome" />
+            <a
+              class="cart-item__image"
+              [routerLink]="['/produtos', item.produto.id]"
+              [attr.aria-label]="'Ver detalhes de ' + item.produto.nome"
+            >
+              <img
+                [src]="itemImage(item) | imageUrl"
+                [alt]="item.produto.nome"
+                [title]="item.produto.nome"
+              />
+            </a>
 
             <div class="cart-item__info">
-              <span>{{ item.produto.categoria }}</span>
-              <h2>{{ item.produto.nome }}</h2>
+              <span class="category">{{ item.produto.categoria }}</span>
+
+              <h2>
+                <a [routerLink]="['/produtos', item.produto.id]">
+                  {{ item.produto.nome }}
+                </a>
+              </h2>
+
               @if (cartService.variationLabel(item); as variationLabel) {
                 <p class="variation-label">{{ variationLabel }}</p>
               }
-              <p>{{ item.produto.preco | brlCurrency }} cada</p>
+
+              <p class="unit-price">
+                {{ item.produto.preco | brlCurrency }} cada
+              </p>
+
+              <small>
+                Estoque disponível: {{ availableStock(item) }} unidade(s)
+              </small>
             </div>
 
-            <label class="quantity">
+            <div class="quantity-box">
               <span>Quantidade</span>
-              <input
-                type="number"
-                min="1"
-                [max]="cartService.getAvailableStock(item.produto, item.variacao)"
-                [value]="item.quantidade"
-                (change)="updateQuantity(item, +$any($event.target).value)"
-              />
-            </label>
+
+              <div class="quantity-control">
+                <button
+                  type="button"
+                  (click)="decreaseQuantity(item)"
+                  [disabled]="item.quantidade <= 1"
+                  aria-label="Diminuir quantidade"
+                >
+                  −
+                </button>
+
+                <input
+                  type="number"
+                  min="1"
+                  [max]="availableStock(item)"
+                  [value]="item.quantidade"
+                  (change)="updateQuantity(item, +$any($event.target).value)"
+                  aria-label="Quantidade do produto"
+                />
+
+                <button
+                  type="button"
+                  (click)="increaseQuantity(item)"
+                  [disabled]="item.quantidade >= availableStock(item)"
+                  aria-label="Aumentar quantidade"
+                >
+                  +
+                </button>
+              </div>
+            </div>
 
             <div class="subtotal">
               <span>Subtotal</span>
               <strong>{{ cartService.getSubtotal(item) | brlCurrency }}</strong>
             </div>
 
-            <app-ui-button variant="danger" (click)="removeItem(item)">
+            <button
+              type="button"
+              class="remove-button"
+              (click)="removeItem(item)"
+            >
               Remover
-            </app-ui-button>
+            </button>
           </article>
         }
-      </div>
+      </section>
 
-      <app-cart-summary
-        [total]="cartService.totalPrice()"
-        [totalItems]="cartService.totalItems()"
-        [disabled]="cartService.isEmpty()"
-      />
+      <aside class="cart-summary glass-card" aria-label="Resumo do pedido">
+        <span>Resumo do pedido</span>
+
+        <div class="summary-row">
+          <small>Itens</small>
+          <strong>{{ cartService.totalItems() }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <small>Subtotal</small>
+          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+        </div>
+
+        <div class="summary-note">
+          <strong>Frete calculado no checkout</strong>
+          <p>
+            Na próxima etapa você informa o CEP para calcular as opções de
+            entrega.
+          </p>
+        </div>
+
+        <div class="summary-total">
+          <span>Total parcial</span>
+          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+        </div>
+
+        <app-ui-button routerLink="/checkout" variant="secondary" [full]="true">
+          Finalizar compra
+        </app-ui-button>
+
+        <app-ui-button routerLink="/produtos" variant="ghost" [full]="true">
+          Continuar comprando
+        </app-ui-button>
+
+        <ul class="summary-benefits">
+          <li>Compra com confirmação antes do envio</li>
+          <li>Atendimento pelo WhatsApp</li>
+          <li>Produtos selecionados pela IA Collection</li>
+        </ul>
+      </aside>
     </div>
   } @else {
     <div class="empty-state glass-card">
+      <span>Carrinho vazio</span>
+
       <h2>Seu carrinho está vazio</h2>
-      <p>Adicione produtos ao carrinho para continuar a compra.</p>
-      <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+
+      <p>
+        Adicione produtos ao carrinho para continuar sua compra na IA
+        Collection.
+      </p>
+
+      <app-ui-button routerLink="/produtos"> Ver produtos </app-ui-button>
     </div>
   }
 </section>
