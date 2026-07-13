@@ -1,207 +1,436 @@
 <section class="page container">
-  <header class="page-header">
+  <header class="page-header checkout-header">
     <span>Checkout</span>
+
     <h1>Finalizar compra</h1>
-    <p>Preencha seus dados, consulte o CEP e escolha a forma de entrega para confirmar o pedido.</p>
+
+    <p>
+      Preencha seus dados, consulte o CEP e escolha a melhor forma de entrega
+      para confirmar seu pedido na IA Collection.
+    </p>
   </header>
 
   @if (cartService.items().length > 0) {
     <div class="checkout-layout">
-      <form class="checkout-form glass-card" [formGroup]="checkoutForm" (ngSubmit)="submit()">
+      <form
+        class="checkout-form glass-card"
+        [formGroup]="checkoutForm"
+        (ngSubmit)="submit()"
+      >
         @if (customerAuthService.currentCustomer(); as customer) {
           <div class="logged-box">
-            Pedido vinculado à conta de <strong>{{ customer.nome }}</strong>.
-            Depois da compra, ele aparecerá em <a routerLink="/meus-pedidos">Meus pedidos</a>.
+            <div>
+              <span>Conta conectada</span>
+              <strong>Pedido vinculado à conta de {{ customer.nome }}</strong>
+              <p>
+                Depois da compra, o pedido aparecerá em
+                <a routerLink="/meus-pedidos">Meus pedidos</a>.
+              </p>
+            </div>
           </div>
         } @else {
           <div class="logged-box logged-box--muted">
-            Você pode finalizar como visitante ou <a routerLink="/login">entrar na conta</a> para acompanhar o pedido.
-          </div>
-        }
-
-        <div class="section-title-inline">
-          <span>1</span>
-          <div>
-            <strong>Dados da cliente</strong>
-            <small>Informações de contato para o pedido.</small>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-row">
-            <label for="nome">Nome completo</label>
-            <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Maria Silva" />
-            @if (hasError('nome')) {
-              <small>Informe seu nome completo.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="email">E-mail</label>
-            <input id="email" type="email" formControlName="email" placeholder="seuemail@exemplo.com" />
-            @if (hasError('email')) {
-              <small>Informe um e-mail válido.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="telefone">Telefone</label>
-            <input id="telefone" type="tel" formControlName="telefone" placeholder="(91) 99999-9999" />
-            @if (hasError('telefone')) {
-              <small>Informe um telefone válido.</small>
-            }
-          </div>
-        </div>
-
-        <div class="section-title-inline">
-          <span>2</span>
-          <div>
-            <strong>Entrega</strong>
-            <small>Digite o CEP para preencher o endereço e calcular o frete.</small>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-row cep-row">
-            <label for="cep">CEP</label>
-            <div class="cep-action">
-              <input id="cep" type="text" formControlName="cep" placeholder="66000-000" />
-              <button type="button" (click)="calculateShipping()" [disabled]="isCalculatingShipping()">
-                {{ isCalculatingShipping() ? 'Consultando...' : 'Consultar' }}
-              </button>
+            <div>
+              <span>Compra como visitante</span>
+              <strong>Finalize sem cadastro</strong>
+              <p>
+                Você também pode <a routerLink="/login">entrar na conta</a>
+                para acompanhar seus pedidos depois.
+              </p>
             </div>
-            @if (hasError('cep')) {
-              <small>Informe um CEP válido.</small>
-            }
-            @if (shippingError()) {
-              <small>{{ shippingError() }}</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="endereco">Rua / logradouro</label>
-            <input id="endereco" type="text" formControlName="endereco" placeholder="Rua, avenida ou travessa" />
-            @if (hasError('endereco')) {
-              <small>Informe o endereço.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="numero">Número</label>
-            <input id="numero" type="text" formControlName="numero" placeholder="123" />
-            @if (hasError('numero')) {
-              <small>Informe o número.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="complemento">Complemento</label>
-            <input id="complemento" type="text" formControlName="complemento" placeholder="Apartamento, bloco, referência" />
-          </div>
-
-          <div class="form-row">
-            <label for="bairro">Bairro</label>
-            <input id="bairro" type="text" formControlName="bairro" placeholder="Bairro" />
-            @if (hasError('bairro')) {
-              <small>Informe o bairro.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="cidade">Cidade</label>
-            <input id="cidade" type="text" formControlName="cidade" placeholder="Cidade" />
-            @if (hasError('cidade')) {
-              <small>Informe a cidade.</small>
-            }
-          </div>
-
-          <div class="form-row">
-            <label for="estado">UF</label>
-            <input id="estado" type="text" formControlName="estado" placeholder="PA" maxlength="2" />
-            @if (hasError('estado')) {
-              <small>Informe a UF.</small>
-            }
-          </div>
-        </div>
-
-        @if (shippingOptions().length > 0) {
-          <div class="shipping-options">
-            @for (option of shippingOptions(); track option.metodo) {
-              <label class="shipping-option" [class.shipping-option--selected]="selectedShipping()?.metodo === option.metodo">
-                <input
-                  type="radio"
-                  name="shipping"
-                  [value]="option.metodo"
-                  [checked]="selectedShipping()?.metodo === option.metodo"
-                  (change)="selectShipping(option.metodo)"
-                />
-                <span>
-                  <strong>{{ option.nome }}</strong>
-                  <small>{{ option.descricao }}</small>
-                  <small>Prazo: {{ option.prazo }}</small>
-                </span>
-                <b>{{ option.preco | brlCurrency }}</b>
-              </label>
-            }
           </div>
         }
 
-        <div class="section-title-inline">
-          <span>3</span>
-          <div>
-            <strong>Pagamento</strong>
-            <small>Escolha uma forma de pagamento simulada.</small>
-          </div>
-        </div>
+        <section class="checkout-section">
+          <div class="section-title-inline">
+            <span>1</span>
 
-        <div class="form-grid">
-          <div class="form-row">
-            <label for="formaPagamento">Forma de pagamento</label>
-            <select id="formaPagamento" formControlName="formaPagamento">
-              <option value="Pix">Pix</option>
-              <option value="Cartão de Crédito">Cartão de Crédito</option>
-              <option value="Boleto Simulado">Boleto Simulado</option>
-            </select>
+            <div>
+              <strong>Dados da cliente</strong>
+              <small
+                >Informações usadas para contato e confirmação do pedido.</small
+              >
+            </div>
           </div>
-        </div>
 
-        <app-ui-button type="submit" variant="secondary" [full]="true" [disabled]="isSubmitting()">
-          {{ isSubmitting() ? 'Confirmando pedido...' : 'Confirmar compra' }}
-        </app-ui-button>
+          <div class="form-grid">
+            <div class="form-row form-row--full">
+              <label for="nome">Nome completo</label>
+
+              <input
+                id="nome"
+                type="text"
+                formControlName="nome"
+                placeholder="Ex.: Maria Silva"
+                autocomplete="name"
+              />
+
+              @if (hasError("nome")) {
+                <small>Informe seu nome completo.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="email">E-mail</label>
+
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="seuemail@exemplo.com"
+                autocomplete="email"
+              />
+
+              @if (hasError("email")) {
+                <small>Informe um e-mail válido.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="telefone">Telefone</label>
+
+              <input
+                id="telefone"
+                type="tel"
+                formControlName="telefone"
+                placeholder="(91) 99999-9999"
+                autocomplete="tel"
+              />
+
+              @if (hasError("telefone")) {
+                <small>Informe um telefone válido.</small>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="checkout-section">
+          <div class="section-title-inline">
+            <span>2</span>
+
+            <div>
+              <strong>Entrega</strong>
+              <small
+                >Digite o CEP para preencher o endereço e calcular o
+                frete.</small
+              >
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-row form-row--full cep-row">
+              <label for="cep">CEP</label>
+
+              <div class="cep-action">
+                <input
+                  id="cep"
+                  type="text"
+                  formControlName="cep"
+                  placeholder="66000-000"
+                  autocomplete="postal-code"
+                />
+
+                <button
+                  type="button"
+                  (click)="calculateShipping()"
+                  [disabled]="isCalculatingShipping()"
+                >
+                  {{
+                    isCalculatingShipping() ? "Consultando..." : "Consultar CEP"
+                  }}
+                </button>
+              </div>
+
+              @if (hasError("cep")) {
+                <small>Informe um CEP válido.</small>
+              }
+
+              @if (shippingError()) {
+                <small>{{ shippingError() }}</small>
+              }
+            </div>
+
+            <div class="form-row form-row--full">
+              <label for="endereco">Rua / logradouro</label>
+
+              <input
+                id="endereco"
+                type="text"
+                formControlName="endereco"
+                placeholder="Rua, avenida ou travessa"
+                autocomplete="address-line1"
+              />
+
+              @if (hasError("endereco")) {
+                <small>Informe o endereço.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="numero">Número</label>
+
+              <input
+                id="numero"
+                type="text"
+                formControlName="numero"
+                placeholder="123"
+                autocomplete="address-line2"
+              />
+
+              @if (hasError("numero")) {
+                <small>Informe o número.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="complemento">Complemento</label>
+
+              <input
+                id="complemento"
+                type="text"
+                formControlName="complemento"
+                placeholder="Apartamento, bloco, referência"
+              />
+            </div>
+
+            <div class="form-row">
+              <label for="bairro">Bairro</label>
+
+              <input
+                id="bairro"
+                type="text"
+                formControlName="bairro"
+                placeholder="Bairro"
+                autocomplete="address-level3"
+              />
+
+              @if (hasError("bairro")) {
+                <small>Informe o bairro.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="cidade">Cidade</label>
+
+              <input
+                id="cidade"
+                type="text"
+                formControlName="cidade"
+                placeholder="Cidade"
+                autocomplete="address-level2"
+              />
+
+              @if (hasError("cidade")) {
+                <small>Informe a cidade.</small>
+              }
+            </div>
+
+            <div class="form-row">
+              <label for="estado">UF</label>
+
+              <input
+                id="estado"
+                type="text"
+                formControlName="estado"
+                placeholder="PA"
+                maxlength="2"
+                autocomplete="address-level1"
+              />
+
+              @if (hasError("estado")) {
+                <small>Informe a UF.</small>
+              }
+            </div>
+          </div>
+
+          @if (shippingOptions().length > 0) {
+            <div class="shipping-options">
+              @for (option of shippingOptions(); track option.metodo) {
+                <label
+                  class="shipping-option"
+                  [class.shipping-option--selected]="
+                    selectedShipping()?.metodo === option.metodo
+                  "
+                >
+                  <input
+                    type="radio"
+                    name="shipping"
+                    [value]="option.metodo"
+                    [checked]="selectedShipping()?.metodo === option.metodo"
+                    (change)="selectShipping(option.metodo)"
+                  />
+
+                  <span>
+                    <strong>{{ option.nome }}</strong>
+                    <small>{{ option.descricao }}</small>
+                    <small>Prazo: {{ option.prazo }}</small>
+                  </span>
+
+                  <b>{{ option.preco | brlCurrency }}</b>
+                </label>
+              }
+            </div>
+          } @else {
+            <div class="shipping-empty">
+              <strong>Frete ainda não calculado</strong>
+              <p>
+                Informe o CEP e clique em consultar para ver as opções de
+                entrega.
+              </p>
+            </div>
+          }
+        </section>
+
+        <section class="checkout-section">
+          <div class="section-title-inline">
+            <span>3</span>
+
+            <div>
+              <strong>Pagamento</strong>
+              <small
+                >Escolha uma forma de pagamento para registrar o pedido.</small
+              >
+            </div>
+          </div>
+
+          <div class="payment-options">
+            <label
+              class="payment-option"
+              [class.payment-option--selected]="
+                checkoutForm.controls.formaPagamento.value === 'Pix'
+              "
+            >
+              <input
+                type="radio"
+                value="Pix"
+                formControlName="formaPagamento"
+              />
+              <span>
+                <strong>Pix</strong>
+                <small>Confirmação rápida pelo atendimento.</small>
+              </span>
+            </label>
+
+            <label
+              class="payment-option"
+              [class.payment-option--selected]="
+                checkoutForm.controls.formaPagamento.value ===
+                'Cartão de Crédito'
+              "
+            >
+              <input
+                type="radio"
+                value="Cartão de Crédito"
+                formControlName="formaPagamento"
+              />
+              <span>
+                <strong>Cartão de Crédito</strong>
+                <small>Pagamento combinado após a confirmação.</small>
+              </span>
+            </label>
+
+            <label
+              class="payment-option"
+              [class.payment-option--selected]="
+                checkoutForm.controls.formaPagamento.value === 'Boleto Simulado'
+              "
+            >
+              <input
+                type="radio"
+                value="Boleto Simulado"
+                formControlName="formaPagamento"
+              />
+              <span>
+                <strong>Boleto Simulado</strong>
+                <small>Opção demonstrativa para o projeto.</small>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <div class="checkout-submit">
+          <app-ui-button
+            type="submit"
+            variant="secondary"
+            [full]="true"
+            [disabled]="isSubmitting()"
+          >
+            {{ isSubmitting() ? "Confirmando pedido..." : "Confirmar compra" }}
+          </app-ui-button>
+
+          <p>
+            Ao confirmar, seu pedido será registrado e você poderá enviar a
+            confirmação pelo WhatsApp na próxima tela.
+          </p>
+        </div>
       </form>
 
       <aside class="order-summary glass-card">
-        <span>Resumo</span>
-        @for (item of cartService.items(); track cartService.itemKey(item)) {
-          <div class="summary-item">
-            <strong>{{ item.produto.nome }}</strong>
-            @if (cartService.variationLabel(item); as variationLabel) {
-              <small>{{ variationLabel }}</small>
-            }
-            <small>{{ item.quantidade }} × {{ item.produto.preco | brlCurrency }}</small>
+        <div class="order-summary__header">
+          <span>Resumo</span>
+          <strong>{{ cartService.totalItems() }} item(ns)</strong>
+        </div>
+
+        <div class="summary-list">
+          @for (item of cartService.items(); track cartService.itemKey(item)) {
+            <div class="summary-item">
+              <div>
+                <strong>{{ item.produto.nome }}</strong>
+
+                @if (cartService.variationLabel(item); as variationLabel) {
+                  <small>{{ variationLabel }}</small>
+                }
+
+                <small
+                  >{{ item.quantidade }} ×
+                  {{ item.produto.preco | brlCurrency }}</small
+                >
+              </div>
+
+              <b>{{ cartService.getSubtotal(item) | brlCurrency }}</b>
+            </div>
+          }
+        </div>
+
+        <div class="summary-prices">
+          <div class="price-row">
+            <span>Subtotal</span>
+            <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
           </div>
-        }
-        <div class="price-row">
-          <span>Subtotal</span>
-          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+
+          <div class="price-row">
+            <span>Frete</span>
+            <strong>{{ selectedShipping()?.preco ?? 0 | brlCurrency }}</strong>
+          </div>
+
+          @if (selectedShipping(); as shipping) {
+            <small class="shipping-summary">
+              {{ shipping.nome }} • {{ shipping.prazo }}
+            </small>
+          } @else {
+            <small class="shipping-summary">
+              Consulte o CEP para calcular o frete.
+            </small>
+          }
         </div>
-        <div class="price-row">
-          <span>Frete</span>
-          <strong>{{ (selectedShipping()?.preco ?? 0) | brlCurrency }}</strong>
-        </div>
-        @if (selectedShipping(); as shipping) {
-          <small class="shipping-summary">{{ shipping.nome }} • {{ shipping.prazo }}</small>
-        } @else {
-          <small class="shipping-summary">Consulte o CEP para calcular o frete.</small>
-        }
+
         <div class="total">
           <span>Total</span>
           <strong>{{ orderTotal() | brlCurrency }}</strong>
         </div>
+
+        <ul class="checkout-benefits">
+          <li>Pedido registrado no sistema</li>
+          <li>Frete calculado pelo CEP</li>
+          <li>Confirmação pelo WhatsApp</li>
+        </ul>
+
+        <a routerLink="/carrinho" class="back-to-cart"> Voltar ao carrinho </a>
       </aside>
     </div>
   } @else {
     <div class="empty-state glass-card">
+      <span>Carrinho vazio</span>
       <h2>Nenhum produto no carrinho</h2>
       <p>Escolha produtos antes de continuar para o checkout.</p>
       <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
