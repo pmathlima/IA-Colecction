@@ -77,6 +77,17 @@ export const routes: Routes = [
     title: 'IA Collection | Detalhe do Pedido',
   },
   {
+    path: 'admin',
+    pathMatch: 'full',
+    redirectTo: 'admin/dashboard',
+  },
+  {
+    path: 'admin/dashboard',
+    canActivate: [adminAuthGuard],
+    loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
+    title: 'IA Collection | Dashboard Admin',
+  },
+  {
     path: 'admin/login',
     loadComponent: () => import('./pages/admin-login/admin-login.component').then((m) => m.AdminLoginComponent),
     title: 'IA Collection | Login Admin',

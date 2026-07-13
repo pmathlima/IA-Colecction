@@ -457,3 +457,30 @@ Funcionalidades:
 - Alterar status para Nova, Lida, Respondida ou Arquivada;
 - Abrir resposta por e-mail ou WhatsApp;
 - Remover mensagens quando necessário.
+
+## Dashboard Administrativo
+
+A aplicação conta com uma tela de visão geral em `/admin/dashboard`, protegida por login administrativo.
+
+O dashboard apresenta:
+
+- total de produtos cadastrados;
+- produtos com estoque baixo;
+- total de pedidos;
+- pedidos novos, pagos e enviados;
+- total vendido;
+- mensagens novas de contato;
+- clientes cadastradas;
+- vendas dos últimos 7 dias;
+- resumo por status dos pedidos;
+- últimos pedidos;
+- mensagens recentes;
+- produtos com estoque baixo.
+
+Endpoint utilizado pelo painel:
+
+```txt
+GET /api/admin/dashboard
+```
+
+Após o login administrativo, o sistema redireciona automaticamente para o dashboard.

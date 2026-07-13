@@ -8,6 +8,7 @@
 
     <div class="admin-hero__actions">
       <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/dashboard" variant="ghost">Dashboard</app-ui-button>
       <app-ui-button routerLink="/admin/produtos" variant="ghost">Produtos</app-ui-button>
       <app-ui-button routerLink="/admin/pedidos" variant="ghost">Pedidos</app-ui-button>
       <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>

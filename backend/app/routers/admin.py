@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
 from ..auth import ADMIN_ACCESS_TOKEN, require_admin, validate_admin_credentials
 from ..database import get_db
-from ..models import ContactMessage, Order, Product, ProductImage, ProductVariation
+from ..models import ContactMessage, Customer, Order, Product, ProductImage, ProductVariation
 from ..schemas import (
+    AdminDashboardLowStockProduct,
+    AdminDashboardResponse,
+    AdminDashboardSalesPoint,
+    AdminDashboardStatusItem,
     AdminInfo,
     AdminLoginRequest,
     AdminLoginResponse,
@@ -153,6 +158,118 @@ def admin_login(credentials: AdminLoginRequest) -> AdminLoginResponse:
     return AdminLoginResponse(
         accessToken=ADMIN_ACCESS_TOKEN,
         admin=AdminInfo(email=credentials.email, nome="Administrador IA Collection"),
+    )
+
+
+
+ORDER_STATUS_LABELS = {
+    "NOVO": "Novo",
+    "EM_ANALISE": "Em análise",
+    "PAGO": "Pago",
+    "ENVIADO": "Enviado",
+    "FINALIZADO": "Finalizado",
+    "CANCELADO": "Cancelado",
+    "CONFIRMADO": "Confirmado",
+}
+
+
+def _money_value(value) -> float:
+    return float(value or 0)
+
+
+@router.get("/dashboard", response_model=AdminDashboardResponse, dependencies=[Depends(require_admin)])
+def admin_dashboard(db: Session = Depends(get_db)) -> AdminDashboardResponse:
+    low_stock_limit = 5
+    today = date.today()
+    first_day = today - timedelta(days=6)
+    first_datetime = datetime(first_day.year, first_day.month, first_day.day)
+
+    total_products = db.query(func.count(Product.id)).scalar() or 0
+    low_stock_count = db.query(func.count(Product.id)).filter(Product.estoque <= low_stock_limit).scalar() or 0
+    total_orders = db.query(func.count(Order.id)).scalar() or 0
+    new_orders = db.query(func.count(Order.id)).filter(Order.status.in_(["NOVO", "EM_ANALISE", "CONFIRMADO"])).scalar() or 0
+    paid_orders = db.query(func.count(Order.id)).filter(Order.status == "PAGO").scalar() or 0
+    shipped_orders = db.query(func.count(Order.id)).filter(Order.status == "ENVIADO").scalar() or 0
+    revenue = db.query(func.sum(Order.total)).filter(Order.status != "CANCELADO").scalar() or 0
+    new_messages = db.query(func.count(ContactMessage.id)).filter(ContactMessage.status == "NOVA").scalar() or 0
+    total_customers = db.query(func.count(Customer.id)).scalar() or 0
+
+    status_rows = db.query(Order.status, func.count(Order.id)).group_by(Order.status).all()
+    status_map = {status: total for status, total in status_rows}
+    status_summary = [
+        AdminDashboardStatusItem(
+            status=status,
+            label=ORDER_STATUS_LABELS.get(status, status.title()),
+            total=int(status_map.get(status, 0)),
+        )
+        for status in ["NOVO", "EM_ANALISE", "PAGO", "ENVIADO", "FINALIZADO", "CANCELADO"]
+    ]
+
+    recent_sales_orders = (
+        db.query(Order)
+        .filter(Order.criado_em >= first_datetime, Order.status != "CANCELADO")
+        .order_by(Order.criado_em.asc())
+        .all()
+    )
+    sales_by_day = {
+        (first_day + timedelta(days=offset)).isoformat(): 0.0
+        for offset in range(7)
+    }
+
+    for order in recent_sales_orders:
+        order_day = order.criado_em.date().isoformat()
+        if order_day in sales_by_day:
+            sales_by_day[order_day] += _money_value(order.total)
+
+    sales_points = [
+        AdminDashboardSalesPoint(
+            date=day,
+            label=datetime.fromisoformat(day).strftime("%d/%m"),
+            total=round(total, 2),
+        )
+        for day, total in sales_by_day.items()
+    ]
+
+    recent_orders = (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .order_by(Order.criado_em.desc())
+        .limit(5)
+        .all()
+    )
+    recent_messages = db.query(ContactMessage).order_by(ContactMessage.criado_em.desc()).limit(5).all()
+    low_stock_products = (
+        db.query(Product)
+        .filter(Product.estoque <= low_stock_limit)
+        .order_by(Product.estoque.asc(), Product.nome.asc())
+        .limit(6)
+        .all()
+    )
+
+    return AdminDashboardResponse(
+        totalProdutos=int(total_products),
+        produtosEstoqueBaixo=int(low_stock_count),
+        totalPedidos=int(total_orders),
+        pedidosNovos=int(new_orders),
+        pedidosPagos=int(paid_orders),
+        pedidosEnviados=int(shipped_orders),
+        totalVendido=round(_money_value(revenue), 2),
+        mensagensNovas=int(new_messages),
+        clientesCadastradas=int(total_customers),
+        vendasUltimosSeteDias=sales_points,
+        statusPedidos=status_summary,
+        ultimosPedidos=[order_to_response(order) for order in recent_orders],
+        ultimasMensagens=[contact_to_response(message) for message in recent_messages],
+        produtosBaixoEstoque=[
+            AdminDashboardLowStockProduct(
+                id=product.id,
+                nome=product.nome,
+                categoria=product.categoria,
+                estoque=product.estoque,
+                imagem=product.imagem,
+            )
+            for product in low_stock_products
+        ],
     )
 
 

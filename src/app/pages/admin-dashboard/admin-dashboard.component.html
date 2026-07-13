@@ -1,0 +1,259 @@
+<section class="admin-dashboard">
+  <aside class="dashboard-sidebar glass-card" aria-label="Menu administrativo">
+    <a class="brand" routerLink="/admin/dashboard">
+      <img src="assets/logo-ia-mark.png" alt="IA Collection" />
+      <div>
+        <strong>IA Collection</strong>
+        <span>Moda feminina</span>
+      </div>
+    </a>
+
+    <nav>
+      <a routerLink="/admin/dashboard" class="active">Dashboard</a>
+      <a routerLink="/admin/produtos">Produtos</a>
+      <a routerLink="/admin/pedidos">Pedidos</a>
+      <a routerLink="/admin/mensagens">Mensagens</a>
+    </nav>
+
+    <button type="button" class="logout-link" (click)="logout()">Sair</button>
+  </aside>
+
+  <div class="dashboard-content">
+    <header class="dashboard-topbar glass-card">
+      <label class="search-box" for="adminSearch">
+        <span>⌕</span>
+        <input id="adminSearch" type="search" placeholder="Buscar pedidos, produtos, clientes..." />
+      </label>
+
+      <div class="admin-profile">
+        <span class="notification">5</span>
+        <div>
+          <strong>{{ adminName() }}</strong>
+          <small>Administrador</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="dashboard-title">
+      <div>
+        <span>Painel administrativo</span>
+        <h1>Dashboard Administrativo</h1>
+        <p>Visão geral da loja, pedidos, produtos, mensagens e estoque.</p>
+      </div>
+
+      <button type="button" class="refresh-button" (click)="loadDashboard()">Atualizar</button>
+    </section>
+
+    @if (isLoading()) {
+      <p class="empty-state glass-card">Carregando indicadores da loja...</p>
+    } @else if (!dashboard()) {
+      <p class="empty-state glass-card">Não foi possível carregar os dados do dashboard.</p>
+    } @else {
+      @let data = dashboard()!;
+
+      <section class="metrics-grid" aria-label="Indicadores principais">
+        <article class="metric-card glass-card">
+          <span class="metric-icon">◈</span>
+          <div>
+            <small>Total de produtos</small>
+            <strong>{{ data.totalProdutos }}</strong>
+            <em>Ativos no catálogo</em>
+          </div>
+        </article>
+
+        <article class="metric-card glass-card">
+          <span class="metric-icon">🛒</span>
+          <div>
+            <small>Pedidos novos</small>
+            <strong>{{ data.pedidosNovos }}</strong>
+            <em>Aguardando atenção</em>
+          </div>
+        </article>
+
+        <article class="metric-card glass-card metric-card--wide">
+          <span class="metric-icon">↗</span>
+          <div>
+            <small>Vendas registradas</small>
+            <strong>{{ data.totalVendido | brlCurrency }}</strong>
+            <em>Total sem pedidos cancelados</em>
+          </div>
+        </article>
+
+        <article class="metric-card glass-card">
+          <span class="metric-icon">!</span>
+          <div>
+            <small>Estoque baixo</small>
+            <strong>{{ data.produtosEstoqueBaixo }}</strong>
+            <em>Produtos com até 5 unidades</em>
+          </div>
+        </article>
+
+        <article class="metric-card glass-card">
+          <span class="metric-icon">✉</span>
+          <div>
+            <small>Mensagens novas</small>
+            <strong>{{ data.mensagensNovas }}</strong>
+            <em>Não lidas</em>
+          </div>
+        </article>
+
+        <article class="metric-card glass-card">
+          <span class="metric-icon">♡</span>
+          <div>
+            <small>Clientes cadastradas</small>
+            <strong>{{ data.clientesCadastradas }}</strong>
+            <em>Total de contas criadas</em>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid--charts">
+        <article class="dashboard-card glass-card sales-card">
+          <div class="card-header">
+            <div>
+              <span>Faturamento</span>
+              <h2>Vendas dos últimos 7 dias</h2>
+            </div>
+            <a routerLink="/admin/pedidos">Ver pedidos</a>
+          </div>
+
+          <div class="bar-chart" aria-label="Gráfico de vendas dos últimos 7 dias">
+            @for (point of data.vendasUltimosSeteDias; track point.date) {
+              <div class="bar-item">
+                <div class="bar-track">
+                  <span class="bar" [style.height]="salesBarHeight(point)"></span>
+                </div>
+                <strong>{{ point.total | brlCurrency }}</strong>
+                <small>{{ point.label }}</small>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="dashboard-card glass-card status-card">
+          <div class="card-header">
+            <div>
+              <span>Pedidos</span>
+              <h2>Status dos pedidos</h2>
+            </div>
+          </div>
+
+          <div class="status-overview">
+            <div class="donut" [style.background]="statusGradient()">
+              <span>Total</span>
+              <strong>{{ totalStatus() }}</strong>
+            </div>
+
+            <ul>
+              @for (item of data.statusPedidos; track item.status) {
+                <li>
+                  <span class="status-dot {{ statusClass(item.status) }}"></span>
+                  <div>
+                    <strong>{{ item.label }}</strong>
+                    <small>{{ item.total }} pedidos</small>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid--tables">
+        <article class="dashboard-card glass-card table-card">
+          <div class="card-header">
+            <div>
+              <span>Pedidos recentes</span>
+              <h2>Últimos pedidos</h2>
+            </div>
+            <a routerLink="/admin/pedidos">Ver todos</a>
+          </div>
+
+          @if (!data.ultimosPedidos.length) {
+            <p class="empty-state">Nenhum pedido recebido ainda.</p>
+          } @else {
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Data</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of data.ultimosPedidos; track order.id) {
+                    <tr>
+                      <td><a [routerLink]="['/admin/pedidos', order.id]">#{{ order.id }}</a></td>
+                      <td>{{ order.cliente.nome }}</td>
+                      <td>
+                        <span class="status {{ statusClass(order.status) }}">{{ orderStatusLabel(order.status) }}</span>
+                      </td>
+                      <td>{{ order.total | brlCurrency }}</td>
+                      <td>{{ order.criadoEm | date: 'dd/MM HH:mm' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </article>
+
+        <article class="dashboard-card glass-card table-card">
+          <div class="card-header">
+            <div>
+              <span>Atendimento</span>
+              <h2>Mensagens recentes</h2>
+            </div>
+            <a routerLink="/admin/mensagens">Ver todas</a>
+          </div>
+
+          @if (!data.ultimasMensagens.length) {
+            <p class="empty-state">Nenhuma mensagem recebida ainda.</p>
+          } @else {
+            <div class="message-list">
+              @for (message of data.ultimasMensagens; track message.id) {
+                <a [routerLink]="['/admin/mensagens', message.id]">
+                  <div>
+                    <strong>{{ message.nome }}</strong>
+                    <small>{{ message.assunto }}</small>
+                  </div>
+                  <span class="status {{ statusClass(message.status) }}">{{ contactStatusLabel(message.status) }}</span>
+                </a>
+              }
+            </div>
+          }
+        </article>
+
+        <article class="dashboard-card glass-card stock-card">
+          <div class="card-header">
+            <div>
+              <span>Estoque</span>
+              <h2>Produtos com estoque baixo</h2>
+            </div>
+            <a routerLink="/admin/produtos">Ver produtos</a>
+          </div>
+
+          @if (!data.produtosBaixoEstoque.length) {
+            <p class="empty-state">Nenhum produto com estoque baixo.</p>
+          } @else {
+            <div class="stock-list">
+              @for (product of data.produtosBaixoEstoque; track product.id) {
+                <a [routerLink]="['/admin/produtos', product.id, 'editar']">
+                  <img [src]="product.imagem | imageUrl" [alt]="product.nome" />
+                  <div>
+                    <strong>{{ product.nome }}</strong>
+                    <small>{{ product.categoria }}</small>
+                  </div>
+                  <span [class.critical]="product.estoque <= 3">{{ product.estoque }} un.</span>
+                </a>
+              }
+            </div>
+          }
+        </article>
+      </section>
+    }
+  </div>
+</section>

@@ -1,7 +1,14 @@
-<app-header />
+@if (!isAdminRoute()) {
+  <app-header />
+}
+
 <app-feedback-message />
-<main>
+
+<main [class.admin-main]="isAdminRoute()">
   <router-outlet />
 </main>
-<app-footer />
-<app-whatsapp-floating />
+
+@if (!isAdminRoute()) {
+  <app-footer />
+  <app-whatsapp-floating />
+}

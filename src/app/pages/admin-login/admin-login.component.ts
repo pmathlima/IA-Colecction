@@ -43,7 +43,7 @@ export class AdminLoginComponent {
       .subscribe({
         next: () => {
           this.feedbackService.show('Login administrativo realizado com sucesso.', 'success');
-          void this.router.navigate(['/admin/produtos']);
+          void this.router.navigate(['/admin/dashboard']);
         },
         error: () => {
           this.feedbackService.show('E-mail ou senha inválidos.', 'error');

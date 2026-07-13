@@ -261,6 +261,50 @@ class ContactResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+
+class AdminDashboardMetric(BaseModel):
+    label: str
+    value: int | float | str
+    helper: str | None = None
+    trend: str | None = None
+
+
+class AdminDashboardSalesPoint(BaseModel):
+    date: str
+    label: str
+    total: float
+
+
+class AdminDashboardStatusItem(BaseModel):
+    status: str
+    label: str
+    total: int
+
+
+class AdminDashboardLowStockProduct(BaseModel):
+    id: int
+    nome: str
+    categoria: str
+    estoque: int
+    imagem: str
+
+
+class AdminDashboardResponse(BaseModel):
+    totalProdutos: int
+    produtosEstoqueBaixo: int
+    totalPedidos: int
+    pedidosNovos: int
+    pedidosPagos: int
+    pedidosEnviados: int
+    totalVendido: float
+    mensagensNovas: int
+    clientesCadastradas: int
+    vendasUltimosSeteDias: list[AdminDashboardSalesPoint]
+    statusPedidos: list[AdminDashboardStatusItem]
+    ultimosPedidos: list[OrderResponse]
+    ultimasMensagens: list[ContactResponse]
+    produtosBaixoEstoque: list[AdminDashboardLowStockProduct]
+
 def contact_to_response(message) -> ContactResponse:
     return ContactResponse(
         id=message.id,
