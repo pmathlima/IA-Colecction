@@ -5,19 +5,31 @@
     <div class="detail-grid">
       <div class="detail-gallery glass-card">
         <div class="detail-image">
-          <img [src]="activeImage() | imageUrl" [alt]="product.nome" />
+          <img
+            [src]="activeImage() | imageUrl"
+            [alt]="product.nome"
+            [title]="product.nome"
+          />
         </div>
 
         @if (galleryImages().length > 1) {
-          <div class="detail-thumbnails" aria-label="Galeria de imagens do produto">
+          <div
+            class="detail-thumbnails"
+            aria-label="Galeria de imagens do produto"
+          >
             @for (image of galleryImages(); track image) {
               <button
                 type="button"
                 class="thumbnail"
                 [class.thumbnail--active]="image === activeImage()"
                 (click)="selectImage(image)"
+                [attr.aria-label]="'Ver imagem de ' + product.nome"
               >
-                <img [src]="image | imageUrl" [alt]="product.nome" />
+                <img
+                  [src]="image | imageUrl"
+                  [alt]="product.nome"
+                  [title]="product.nome"
+                />
               </button>
             }
           </div>
@@ -25,16 +37,33 @@
       </div>
 
       <article class="detail-info glass-card">
-        <app-category-badge [category]="product.categoria" />
-        <h1>{{ product.nome }}</h1>
-        <p>{{ product.descricao }}</p>
+        <div class="detail-info__top">
+          <app-category-badge [category]="product.categoria" />
 
-        <div class="price">{{ product.preco | brlCurrency }}</div>
+          @if (product.destaque) {
+            <span class="featured-label">Destaque</span>
+          }
+        </div>
+
+        <div>
+          <h1>{{ product.nome }}</h1>
+          <p>{{ product.descricao }}</p>
+        </div>
+
+        <div class="price-row">
+          <div>
+            <span>Preço</span>
+            <strong>{{ product.preco | brlCurrency }}</strong>
+          </div>
+
+          <small>Compra segura via carrinho ou WhatsApp</small>
+        </div>
 
         @if (hasVariations()) {
           <section class="variation-picker">
-            <div>
-              <strong>Cor</strong>
+            <div class="variation-picker__group">
+              <strong>Escolha a cor</strong>
+
               <div class="option-list">
                 @for (color of availableColors(); track color) {
                   <button
@@ -49,8 +78,9 @@
               </div>
             </div>
 
-            <div>
-              <strong>Tamanho</strong>
+            <div class="variation-picker__group">
+              <strong>Escolha o tamanho</strong>
+
               <div class="option-list">
                 @for (size of availableSizes(); track size) {
                   <button
@@ -68,21 +98,77 @@
           </section>
         }
 
-        <div class="stock" [class.stock--low]="availableStock() <= 8 && availableStock() > 0">
+        <div
+          class="stock"
+          [class.stock--low]="availableStock() <= 8 && availableStock() > 0"
+          [class.stock--empty]="availableStock() <= 0"
+        >
           @if (hasVariations() && !selectedVariation()) {
-            <span>Selecione cor e tamanho</span>
-            <strong>{{ product.estoque }} unidades no total</strong>
+            <div>
+              <span>Selecione cor e tamanho</span>
+              <strong>{{ product.estoque }} unidades no total</strong>
+            </div>
           } @else if (availableStock() > 0) {
-            <span>Disponível em estoque</span>
-            <strong>{{ availableStock() }} unidades</strong>
+            <div>
+              <span>Disponível em estoque</span>
+              <strong>{{ availableStock() }} unidades disponíveis</strong>
+            </div>
           } @else {
-            <span>Produto indisponível</span>
+            <div>
+              <span>Produto indisponível</span>
+              <strong>Sem estoque no momento</strong>
+            </div>
           }
         </div>
 
-        <app-ui-button [disabled]="!canAddToCart()" (click)="addToCart()">
-          Adicionar ao carrinho
-        </app-ui-button>
+        <div class="quantity-box">
+          <div>
+            <span>Quantidade</span>
+            <strong>{{ safeQuantity() }} unidade(s)</strong>
+          </div>
+
+          <div class="quantity-control">
+            <button
+              type="button"
+              (click)="decreaseQuantity()"
+              [disabled]="safeQuantity() <= 1"
+              aria-label="Diminuir quantidade"
+            >
+              −
+            </button>
+
+            <span>{{ safeQuantity() }}</span>
+
+            <button
+              type="button"
+              (click)="increaseQuantity()"
+              [disabled]="!canAddToCart() || safeQuantity() >= availableStock()"
+              aria-label="Aumentar quantidade"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <app-ui-button [disabled]="!canAddToCart()" (click)="addToCart()">
+            Adicionar ao carrinho
+          </app-ui-button>
+
+          <app-ui-button
+            variant="ghost"
+            [disabled]="!canAddToCart()"
+            (click)="buyOnWhatsapp()"
+          >
+            Comprar pelo WhatsApp
+          </app-ui-button>
+        </div>
+
+        <ul class="detail-benefits">
+          <li>Atendimento direto pelo WhatsApp</li>
+          <li>Produto com disponibilidade em estoque</li>
+          <li>Peças selecionadas pela IA Collection</li>
+        </ul>
       </article>
     </div>
   } @else {
