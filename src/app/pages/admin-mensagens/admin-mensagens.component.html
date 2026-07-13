@@ -1,0 +1,94 @@
+<section class="admin-page container">
+  <header class="admin-hero glass-card">
+    <div>
+      <span>Painel administrativo</span>
+      <h1>Mensagens de contato</h1>
+      <p>Acompanhe dúvidas enviadas pelo formulário do site e organize o atendimento da IA Collection.</p>
+    </div>
+
+    <div class="admin-hero__actions">
+      <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/produtos" variant="ghost">Produtos</app-ui-button>
+      <app-ui-button routerLink="/admin/pedidos" variant="ghost">Pedidos</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  <div class="admin-metrics">
+    <article class="glass-card">
+      <span>Mensagens carregadas</span>
+      <strong>{{ totalMessages() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Novas</span>
+      <strong>{{ newMessages() }}</strong>
+    </article>
+    <article class="glass-card">
+      <span>Pendentes</span>
+      <strong>{{ pendingMessages() }}</strong>
+    </article>
+  </div>
+
+  <section class="admin-table glass-card">
+    <div class="admin-table__header">
+      <div>
+        <span>Atendimento</span>
+        <h2>Lista de mensagens</h2>
+      </div>
+      <div class="toolbar-actions">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" [value]="selectedStatus()" (change)="changeStatusFilter($any($event.target).value)">
+          <option value="TODAS">Todas</option>
+          @for (status of statusOptions; track status) {
+            <option [value]="status">{{ statusLabel(status) }}</option>
+          }
+        </select>
+        <app-ui-button variant="ghost" type="button" (click)="loadMessages()">Atualizar</app-ui-button>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <p class="empty-state">Carregando mensagens...</p>
+    } @else if (!messages().length) {
+      <p class="empty-state">Nenhuma mensagem encontrada.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Assunto</th>
+              <th>Data</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (message of messages(); track message.id) {
+              <tr>
+                <td>
+                  <strong>{{ message.nome }}</strong>
+                  <small>{{ message.email }}</small>
+                  <small>{{ message.telefone }}</small>
+                </td>
+                <td>
+                  <strong>{{ message.assunto }}</strong>
+                  <small>{{ message.mensagem }}</small>
+                </td>
+                <td>{{ message.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="status {{ statusClass(message.status) }}">
+                    {{ statusLabel(message.status) }}
+                  </span>
+                </td>
+                <td>
+                  <a class="details-link" [routerLink]="['/admin/mensagens', message.id]">Ver detalhes</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>

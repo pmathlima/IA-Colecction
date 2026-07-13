@@ -55,3 +55,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.form-row--full {
+  grid-column: 1 / -1;
+}

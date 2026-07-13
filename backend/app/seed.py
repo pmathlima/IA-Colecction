@@ -57,6 +57,23 @@ def run_light_migrations() -> None:
                 if column_name not in order_item_columns:
                     connection.execute(text(f"ALTER TABLE order_items ADD COLUMN {column_name} {column_type}"))
 
+    if "contact_messages" in table_names:
+        contact_columns = {column["name"] for column in inspector.get_columns("contact_messages")}
+        columns_to_add = {
+            "telefone": "VARCHAR(40)",
+            "assunto": "VARCHAR(120)",
+            "atualizado_em": "DATETIME",
+        }
+
+        with engine.begin() as connection:
+            for column_name, column_type in columns_to_add.items():
+                if column_name not in contact_columns:
+                    connection.execute(text(f"ALTER TABLE contact_messages ADD COLUMN {column_name} {column_type}"))
+
+            connection.execute(text("UPDATE contact_messages SET status = 'NOVA' WHERE status = 'NOVO'"))
+            connection.execute(text("UPDATE contact_messages SET assunto = 'Contato pelo site' WHERE assunto IS NULL"))
+            connection.execute(text("UPDATE contact_messages SET atualizado_em = criado_em WHERE atualizado_em IS NULL"))
+
 
 def _default_variations(category: str, stock: int) -> list[dict]:
     if category == "Calçados":

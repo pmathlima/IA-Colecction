@@ -315,10 +315,10 @@ src/app/core/config/store.config.ts
 Atualize a constante:
 
 ```ts
-export const STORE_WHATSAPP_NUMBER = '5591999999999';
+export const STORE_WHATSAPP_NUMBER = '5591985572768';
 ```
 
-Use o formato internacional sem `+`, espaços ou parênteses. Exemplo para Brasil/Pará: `5591999999999`.
+Use o formato internacional sem `+`, espaços ou parênteses. Exemplo para Brasil/Pará: `5591985572768`.
 
 ## Galeria de imagens reais do produto
 
@@ -436,3 +436,24 @@ Exemplo de payload:
   "subtotal": 189.9
 }
 ```
+
+
+## Painel administrativo de mensagens
+
+A IA Collection também possui uma área para acompanhar as mensagens enviadas pelo formulário de contato do site.
+
+Rotas principais:
+
+```txt
+/admin/mensagens
+/admin/mensagens/:id
+```
+
+Funcionalidades:
+
+- Listar mensagens recebidas pelo formulário de contato;
+- Filtrar por status;
+- Visualizar nome, e-mail, telefone, assunto e mensagem;
+- Alterar status para Nova, Lida, Respondida ou Arquivada;
+- Abrir resposta por e-mail ou WhatsApp;
+- Remover mensagens quando necessário.

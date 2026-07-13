@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
@@ -9,11 +10,13 @@ from sqlalchemy.orm import Session, joinedload
 
 from ..auth import ADMIN_ACCESS_TOKEN, require_admin, validate_admin_credentials
 from ..database import get_db
-from ..models import Order, Product, ProductImage, ProductVariation
+from ..models import ContactMessage, Order, Product, ProductImage, ProductVariation
 from ..schemas import (
     AdminInfo,
     AdminLoginRequest,
     AdminLoginResponse,
+    ContactResponse,
+    ContactStatusUpdate,
     ImageUploadResponse,
     ImagesUploadResponse,
     OrderResponse,
@@ -24,6 +27,7 @@ from ..schemas import (
     ProductVariationCreate,
     ProductVariationResponse,
     ProductVariationUpdate,
+    contact_to_response,
     order_to_response,
     product_to_response,
 )
@@ -348,6 +352,61 @@ def admin_delete_product_variation(product_id: int, variation_id: int, db: Sessi
     db.delete(variation)
     db.flush()
     _sync_product_stock_from_variations(product)
+    db.commit()
+
+
+@router.get("/contact-messages", response_model=list[ContactResponse], dependencies=[Depends(require_admin)])
+def admin_list_contact_messages(status_filter: str | None = None, db: Session = Depends(get_db)):
+    query = db.query(ContactMessage)
+
+    if status_filter:
+        query = query.filter(ContactMessage.status == status_filter.upper())
+
+    messages = query.order_by(ContactMessage.criado_em.desc()).all()
+    return [contact_to_response(message) for message in messages]
+
+
+@router.get("/contact-messages/{message_id}", response_model=ContactResponse, dependencies=[Depends(require_admin)])
+def admin_get_contact_message(message_id: int, db: Session = Depends(get_db)):
+    message = db.get(ContactMessage, message_id)
+
+    if not message:
+        raise HTTPException(status_code=404, detail="Mensagem não encontrada.")
+
+    return contact_to_response(message)
+
+
+@router.patch("/contact-messages/{message_id}/status", response_model=ContactResponse, dependencies=[Depends(require_admin)])
+def admin_update_contact_message_status(
+    message_id: int,
+    payload: ContactStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    message = db.get(ContactMessage, message_id)
+
+    if not message:
+        raise HTTPException(status_code=404, detail="Mensagem não encontrada.")
+
+    message.status = payload.status
+    message.atualizado_em = datetime.utcnow()
+    db.commit()
+    db.refresh(message)
+
+    return contact_to_response(message)
+
+
+@router.delete(
+    "/contact-messages/{message_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_admin)],
+)
+def admin_delete_contact_message(message_id: int, db: Session = Depends(get_db)):
+    message = db.get(ContactMessage, message_id)
+
+    if not message:
+        raise HTTPException(status_code=404, detail="Mensagem não encontrada.")
+
+    db.delete(message)
     db.commit()
 
 

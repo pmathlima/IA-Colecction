@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 PaymentMethod = Literal["Pix", "Cartão de Crédito", "Boleto Simulado"]
 OrderStatus = Literal["NOVO", "EM_ANALISE", "PAGO", "ENVIADO", "FINALIZADO", "CANCELADO"]
+ContactStatus = Literal["NOVA", "LIDA", "RESPONDIDA", "ARQUIVADA"]
 DeliveryMethod = Literal[
     "RETIRADA",
     "ENTREGA_LOCAL",
@@ -237,18 +238,41 @@ class OrderStatusUpdate(BaseModel):
 class ContactCreate(BaseModel):
     nome: str = Field(min_length=3, max_length=120)
     email: EmailStr
+    telefone: str = Field(min_length=10, max_length=40)
+    assunto: str = Field(min_length=3, max_length=120)
     mensagem: str = Field(min_length=10)
+
+
+class ContactStatusUpdate(BaseModel):
+    status: ContactStatus
 
 
 class ContactResponse(BaseModel):
     id: int
     nome: str
     email: EmailStr
+    telefone: str | None = None
+    assunto: str | None = None
     mensagem: str
     status: str
     criadoEm: datetime
+    atualizadoEm: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+def contact_to_response(message) -> ContactResponse:
+    return ContactResponse(
+        id=message.id,
+        nome=message.nome,
+        email=message.email,
+        telefone=message.telefone,
+        assunto=message.assunto or "Contato pelo site",
+        mensagem=message.mensagem,
+        status=message.status,
+        criadoEm=message.criado_em,
+        atualizadoEm=getattr(message, "atualizado_em", None),
+    )
 
 
 def customer_to_response(customer) -> CustomerInfo:

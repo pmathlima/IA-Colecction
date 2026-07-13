@@ -1,0 +1,70 @@
+<section class="admin-page container">
+  <header class="admin-hero glass-card">
+    <div>
+      <span>Painel administrativo</span>
+      <h1>Detalhes da mensagem</h1>
+      <p>Veja o conteúdo enviado pela cliente e acompanhe o status do atendimento.</p>
+    </div>
+
+    <div class="admin-hero__actions">
+      <strong>{{ adminName() }}</strong>
+      <app-ui-button routerLink="/admin/mensagens" variant="ghost">Voltar às mensagens</app-ui-button>
+      <app-ui-button variant="ghost" type="button" (click)="logout()">Sair</app-ui-button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="glass-card loading-state">Carregando mensagem...</div>
+  } @else if (message(); as currentMessage) {
+    <section class="message-grid">
+      <article class="message-card glass-card message-card--main">
+        <div class="card-header">
+          <div>
+            <span>Mensagem</span>
+            <h2>{{ currentMessage.assunto }}</h2>
+            <small>Recebida em {{ currentMessage.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <span class="status {{ statusClass(currentMessage.status) }}">
+            {{ statusLabel(currentMessage.status) }}
+          </span>
+        </div>
+
+        <p class="message-text">{{ currentMessage.mensagem }}</p>
+
+        <div class="status-control">
+          <label for="status">Atualizar status</label>
+          <select
+            id="status"
+            [value]="currentMessage.status"
+            [disabled]="isUpdating()"
+            (change)="updateStatus(asContactStatus($any($event.target).value))"
+          >
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </div>
+      </article>
+
+      <aside class="message-card glass-card">
+        <span>Cliente</span>
+        <h2>{{ currentMessage.nome }}</h2>
+        <div class="info-list">
+          <p><strong>E-mail:</strong> {{ currentMessage.email }}</p>
+          <p><strong>Telefone:</strong> {{ currentMessage.telefone }}</p>
+          <p><strong>Atualização:</strong> {{ currentMessage.atualizadoEm | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+
+        <div class="quick-actions">
+          <a class="action-link" [href]="emailLink(currentMessage)">Responder por e-mail</a>
+          @if (whatsappLink(currentMessage); as link) {
+            <a class="action-link" [href]="link" target="_blank" rel="noopener noreferrer">Responder no WhatsApp</a>
+          }
+          <button type="button" class="danger-link" [disabled]="isDeleting()" (click)="deleteMessage()">
+            {{ isDeleting() ? 'Removendo...' : 'Remover mensagem' }}
+          </button>
+        </div>
+      </aside>
+    </section>
+  }
+</section>

@@ -24,6 +24,8 @@ export class ContatoComponent {
   protected readonly contactForm = this.formBuilder.group({
     nome: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
+    telefone: ['', [Validators.required, Validators.minLength(10)]],
+    assunto: ['', [Validators.required, Validators.minLength(3)]],
     mensagem: ['', [Validators.required, Validators.minLength(10)]],
   });
 

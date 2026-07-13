@@ -101,6 +101,20 @@ export const routes: Routes = [
       import('./pages/admin-produto-form/admin-produto-form.component').then((m) => m.AdminProdutoFormComponent),
     title: 'IA Collection | Editar Produto',
   },
+
+  {
+    path: 'admin/mensagens',
+    canActivate: [adminAuthGuard],
+    loadComponent: () => import('./pages/admin-mensagens/admin-mensagens.component').then((m) => m.AdminMensagensComponent),
+    title: 'IA Collection | Admin Mensagens',
+  },
+  {
+    path: 'admin/mensagens/:id',
+    canActivate: [adminAuthGuard],
+    loadComponent: () =>
+      import('./pages/admin-mensagem-detalhe/admin-mensagem-detalhe.component').then((m) => m.AdminMensagemDetalheComponent),
+    title: 'IA Collection | Detalhes da Mensagem',
+  },
   {
     path: 'admin/pedidos',
     canActivate: [adminAuthGuard],
