@@ -32,6 +32,14 @@
             <strong>{{ statusLabels[currentOrder.status] }}</strong>
           </div>
           <div>
+            <small>Subtotal</small>
+            <strong>{{ currentOrder.subtotal | brlCurrency }}</strong>
+          </div>
+          <div>
+            <small>Frete</small>
+            <strong>{{ currentOrder.entrega.preco | brlCurrency }}</strong>
+          </div>
+          <div>
             <small>Total</small>
             <strong>{{ currentOrder.total | brlCurrency }}</strong>
           </div>
@@ -79,6 +87,11 @@
           <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
           <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
           <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
+          <p><strong>Entrega:</strong> {{ currentOrder.entrega.nome }}</p>
+          <p><strong>Prazo:</strong> {{ currentOrder.entrega.prazo }}</p>
+          @if (currentOrder.entrega.cep) {
+            <p><strong>CEP:</strong> {{ currentOrder.entrega.cep }}</p>
+          }
         </div>
       </section>
     </div>

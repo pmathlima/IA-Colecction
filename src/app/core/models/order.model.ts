@@ -1,3 +1,5 @@
+import { DeliverySelection } from './shipping.model';
+
 export type PaymentMethod = 'Pix' | 'Cartão de Crédito' | 'Boleto Simulado';
 export type OrderStatus = 'NOVO' | 'EM_ANALISE' | 'PAGO' | 'ENVIADO' | 'FINALIZADO' | 'CANCELADO' | 'CONFIRMADO';
 
@@ -44,6 +46,8 @@ export interface Order {
   id: string;
   cliente: CustomerData;
   itens: OrderItemResponse[];
+  subtotal: number;
+  entrega: DeliverySelection;
   total: number;
   status: OrderStatus;
   criadoEm: string;

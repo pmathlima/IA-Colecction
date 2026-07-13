@@ -7,6 +7,13 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 PaymentMethod = Literal["Pix", "Cartão de Crédito", "Boleto Simulado"]
 OrderStatus = Literal["NOVO", "EM_ANALISE", "PAGO", "ENVIADO", "FINALIZADO", "CANCELADO"]
+DeliveryMethod = Literal[
+    "RETIRADA",
+    "ENTREGA_LOCAL",
+    "ENTREGA_METROPOLITANA",
+    "ENTREGA_ESTADUAL",
+    "ENTREGA_NACIONAL",
+]
 
 
 class AdminLoginRequest(BaseModel):
@@ -154,9 +161,50 @@ class OrderItemCreate(BaseModel):
     variacaoId: int | None = Field(default=None, gt=0)
 
 
+class AddressResponse(BaseModel):
+    cep: str
+    logradouro: str
+    bairro: str
+    cidade: str
+    estado: str
+
+
+class DeliveryOptionResponse(BaseModel):
+    metodo: DeliveryMethod
+    nome: str
+    preco: float
+    prazo: str
+    descricao: str
+
+
+class ShippingCalculateRequest(BaseModel):
+    cep: str = Field(min_length=8, max_length=10)
+    subtotal: float = Field(ge=0)
+
+
+class ShippingCalculateResponse(BaseModel):
+    endereco: AddressResponse
+    opcoes: list[DeliveryOptionResponse]
+
+
+class DeliverySelection(BaseModel):
+    metodo: DeliveryMethod
+    nome: str = Field(min_length=3, max_length=80)
+    preco: float = Field(ge=0)
+    prazo: str = Field(min_length=3, max_length=80)
+    cep: str | None = Field(default=None, max_length=12)
+    logradouro: str | None = Field(default=None, max_length=160)
+    numero: str | None = Field(default=None, max_length=20)
+    complemento: str | None = Field(default=None, max_length=80)
+    bairro: str | None = Field(default=None, max_length=80)
+    cidade: str | None = Field(default=None, max_length=80)
+    estado: str | None = Field(default=None, max_length=2)
+
+
 class OrderCreate(BaseModel):
     cliente: CustomerData
     itens: list[OrderItemCreate] = Field(min_length=1)
+    entrega: DeliverySelection | None = None
 
 
 class OrderItemResponse(BaseModel):
@@ -175,6 +223,8 @@ class OrderResponse(BaseModel):
     id: str
     cliente: CustomerData
     itens: list[OrderItemResponse]
+    subtotal: float
+    entrega: DeliverySelection
     total: float
     status: str
     criadoEm: str
@@ -297,7 +347,39 @@ def order_to_response(order) -> OrderResponse:
             )
             for item in order.items
         ],
+        subtotal=float(order.subtotal or 0),
+        entrega=DeliverySelection(
+            metodo=order.delivery_method or "RETIRADA",
+            nome=order.delivery_service or "Retirada na loja",
+            preco=float(order.delivery_price or 0),
+            prazo=order.delivery_deadline or "Disponível em até 1 dia útil",
+            cep=order.delivery_zipcode,
+            cidade=order.delivery_city,
+            estado=order.delivery_state,
+        ),
         total=float(order.total),
         status=order.status,
         criadoEm=order.criado_em.isoformat(),
+    )
+
+
+def shipping_to_response(address, options) -> ShippingCalculateResponse:
+    return ShippingCalculateResponse(
+        endereco=AddressResponse(
+            cep=address.cep,
+            logradouro=address.logradouro,
+            bairro=address.bairro,
+            cidade=address.cidade,
+            estado=address.estado,
+        ),
+        opcoes=[
+            DeliveryOptionResponse(
+                metodo=option.metodo,
+                nome=option.nome,
+                preco=float(option.preco),
+                prazo=option.prazo,
+                descricao=option.descricao,
+            )
+            for option in options
+        ],
     )

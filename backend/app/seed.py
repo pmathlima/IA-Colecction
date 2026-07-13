@@ -20,9 +20,28 @@ def run_light_migrations() -> None:
 
     if "orders" in table_names:
         order_columns = {column["name"] for column in inspector.get_columns("orders")}
-        if "customer_id" not in order_columns:
-            with engine.begin() as connection:
-                connection.execute(text("ALTER TABLE orders ADD COLUMN customer_id INTEGER"))
+        columns_to_add = {
+            "customer_id": "INTEGER",
+            "subtotal": "NUMERIC(10, 2)",
+            "delivery_method": "VARCHAR(40)",
+            "delivery_service": "VARCHAR(80)",
+            "delivery_price": "NUMERIC(10, 2)",
+            "delivery_deadline": "VARCHAR(80)",
+            "delivery_zipcode": "VARCHAR(12)",
+            "delivery_city": "VARCHAR(80)",
+            "delivery_state": "VARCHAR(2)",
+        }
+
+        with engine.begin() as connection:
+            for column_name, column_type in columns_to_add.items():
+                if column_name not in order_columns:
+                    connection.execute(text(f"ALTER TABLE orders ADD COLUMN {column_name} {column_type}"))
+
+            connection.execute(text("UPDATE orders SET subtotal = total WHERE subtotal IS NULL"))
+            connection.execute(text("UPDATE orders SET delivery_method = 'RETIRADA' WHERE delivery_method IS NULL"))
+            connection.execute(text("UPDATE orders SET delivery_service = 'Retirada na loja' WHERE delivery_service IS NULL"))
+            connection.execute(text("UPDATE orders SET delivery_price = 0 WHERE delivery_price IS NULL"))
+            connection.execute(text("UPDATE orders SET delivery_deadline = 'Disponível em até 1 dia útil' WHERE delivery_deadline IS NULL"))
 
     if "order_items" in table_names:
         order_item_columns = {column["name"] for column in inspector.get_columns("order_items")}

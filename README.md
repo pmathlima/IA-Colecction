@@ -402,3 +402,37 @@ O payload de pedido agora aceita `variacaoId` nos itens:
 ```
 
 Se um produto possui variações ativas, a API exige que o pedido informe a variação escolhida.
+
+## Frete e entrega
+
+O checkout agora possui consulta de CEP gratuita e cálculo de frete por regras internas.
+
+Fluxo implementado:
+
+- Cliente informa o CEP no checkout.
+- Backend consulta o endereço via ViaCEP.
+- Sistema preenche rua, bairro, cidade e UF.
+- Backend retorna opções de entrega:
+  - Retirada na loja: R$ 0,00;
+  - Entrega local para Belém: R$ 10,00;
+  - Entrega região metropolitana: R$ 18,00;
+  - Entrega estadual no Pará: R$ 25,00;
+  - Entrega nacional: R$ 35,00.
+- Pedidos acima de R$ 250,00 recebem frete grátis nas modalidades de entrega.
+- O pedido salva subtotal, frete, método de entrega, prazo, CEP, cidade, UF e total final.
+- Admin, cliente e WhatsApp exibem as informações de frete e entrega.
+
+Endpoint principal:
+
+```txt
+POST /api/shipping/calculate
+```
+
+Exemplo de payload:
+
+```json
+{
+  "cep": "66000000",
+  "subtotal": 189.9
+}
+```

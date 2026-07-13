@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .routers import admin, contact, customers, orders, products
+from .routers import admin, contact, customers, orders, products, shipping
 from .seed import init_db
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
@@ -48,5 +48,6 @@ def health_check():
 app.include_router(products.router, prefix="/api")
 app.include_router(admin.router, prefix="/api")
 app.include_router(orders.router, prefix="/api")
+app.include_router(shipping.router, prefix="/api")
 app.include_router(customers.router, prefix="/api")
 app.include_router(contact.router, prefix="/api")

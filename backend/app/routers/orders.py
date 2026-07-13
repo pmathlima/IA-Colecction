@@ -10,7 +10,8 @@ from sqlalchemy.orm import Session, joinedload
 from ..customer_auth import customer_security, get_optional_customer
 from ..database import get_db
 from ..models import Order, OrderItem, Product, ProductVariation
-from ..schemas import OrderCreate, OrderResponse, order_to_response
+from ..schemas import DeliverySelection, OrderCreate, OrderResponse, order_to_response
+from ..shipping_rules import calculate_shipping_options, lookup_cep, pickup_option
 
 router = APIRouter(prefix="/orders", tags=["Pedidos"])
 
@@ -20,6 +21,48 @@ def _sync_product_stock(product: Product) -> None:
 
     if active_variations:
         product.estoque = sum(variation.estoque for variation in active_variations)
+
+
+def _resolve_delivery(payload_delivery: DeliverySelection | None, subtotal: Decimal) -> DeliverySelection:
+    if not payload_delivery or payload_delivery.metodo == "RETIRADA":
+        option = pickup_option()
+        return DeliverySelection(
+            metodo=option.metodo,
+            nome=option.nome,
+            preco=float(option.preco),
+            prazo=option.prazo,
+            cep=payload_delivery.cep if payload_delivery else None,
+            logradouro=payload_delivery.logradouro if payload_delivery else None,
+            numero=payload_delivery.numero if payload_delivery else None,
+            complemento=payload_delivery.complemento if payload_delivery else None,
+            bairro=payload_delivery.bairro if payload_delivery else None,
+            cidade=payload_delivery.cidade if payload_delivery else None,
+            estado=payload_delivery.estado if payload_delivery else None,
+        )
+
+    if not payload_delivery.cep:
+        raise HTTPException(status_code=400, detail="Informe o CEP para calcular a entrega.")
+
+    address = lookup_cep(payload_delivery.cep)
+    options = calculate_shipping_options(address, subtotal)
+    selected = next((option for option in options if option.metodo == payload_delivery.metodo), None)
+
+    if not selected:
+        raise HTTPException(status_code=400, detail="Forma de entrega inválida para o CEP informado.")
+
+    return DeliverySelection(
+        metodo=selected.metodo,
+        nome=selected.nome,
+        preco=float(selected.preco),
+        prazo=selected.prazo,
+        cep=address.cep,
+        logradouro=payload_delivery.logradouro or address.logradouro,
+        numero=payload_delivery.numero,
+        complemento=payload_delivery.complemento,
+        bairro=payload_delivery.bairro or address.bairro,
+        cidade=address.cidade,
+        estado=address.estado,
+    )
 
 
 @router.post("", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
@@ -44,7 +87,7 @@ def create_order(
     variations = db.query(ProductVariation).filter(ProductVariation.id.in_(variation_ids)).all() if variation_ids else []
     variations_by_id = {variation.id: variation for variation in variations}
 
-    total = Decimal("0.00")
+    subtotal_total = Decimal("0.00")
     order_items: list[OrderItem] = []
 
     for item in payload.itens:
@@ -89,8 +132,8 @@ def create_order(
 
             product.estoque -= item.quantidade
 
-        subtotal = Decimal(product.preco) * Decimal(item.quantidade)
-        total += subtotal
+        item_subtotal = Decimal(product.preco) * Decimal(item.quantidade)
+        subtotal_total += item_subtotal
 
         order_items.append(
             OrderItem(
@@ -102,10 +145,13 @@ def create_order(
                 product_name=product.nome,
                 unit_price=product.preco,
                 quantity=item.quantidade,
-                subtotal=subtotal,
+                subtotal=item_subtotal,
             )
         )
 
+    delivery = _resolve_delivery(payload.entrega, subtotal_total)
+    delivery_price = Decimal(str(delivery.preco))
+    total = subtotal_total + delivery_price
     customer = get_optional_customer(credentials, db)
 
     order = Order(
@@ -116,6 +162,14 @@ def create_order(
         cliente_telefone=payload.cliente.telefone,
         cliente_endereco=payload.cliente.endereco,
         forma_pagamento=payload.cliente.formaPagamento,
+        subtotal=subtotal_total,
+        delivery_method=delivery.metodo,
+        delivery_service=delivery.nome,
+        delivery_price=delivery_price,
+        delivery_deadline=delivery.prazo,
+        delivery_zipcode=delivery.cep,
+        delivery_city=delivery.cidade,
+        delivery_state=delivery.estado,
         total=total,
         status="NOVO",
         items=order_items,

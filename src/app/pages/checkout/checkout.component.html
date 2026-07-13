@@ -2,7 +2,7 @@
   <header class="page-header">
     <span>Checkout</span>
     <h1>Finalizar compra</h1>
-    <p>Preencha seus dados para simular a finalização do pedido na IA Collection.</p>
+    <p>Preencha seus dados, consulte o CEP e escolha a forma de entrega para confirmar o pedido.</p>
   </header>
 
   @if (cartService.items().length > 0) {
@@ -19,10 +19,18 @@
           </div>
         }
 
+        <div class="section-title-inline">
+          <span>1</span>
+          <div>
+            <strong>Dados da cliente</strong>
+            <small>Informações de contato para o pedido.</small>
+          </div>
+        </div>
+
         <div class="form-grid">
           <div class="form-row">
             <label for="nome">Nome completo</label>
-            <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Matheus Lima" />
+            <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Maria Silva" />
             @if (hasError('nome')) {
               <small>Informe seu nome completo.</small>
             }
@@ -43,15 +51,110 @@
               <small>Informe um telefone válido.</small>
             }
           </div>
+        </div>
 
-          <div class="form-row">
-            <label for="endereco">Endereço</label>
-            <textarea id="endereco" formControlName="endereco" placeholder="Rua, número, bairro, cidade e estado"></textarea>
-            @if (hasError('endereco')) {
-              <small>Informe um endereço válido.</small>
+        <div class="section-title-inline">
+          <span>2</span>
+          <div>
+            <strong>Entrega</strong>
+            <small>Digite o CEP para preencher o endereço e calcular o frete.</small>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-row cep-row">
+            <label for="cep">CEP</label>
+            <div class="cep-action">
+              <input id="cep" type="text" formControlName="cep" placeholder="66000-000" />
+              <button type="button" (click)="calculateShipping()" [disabled]="isCalculatingShipping()">
+                {{ isCalculatingShipping() ? 'Consultando...' : 'Consultar' }}
+              </button>
+            </div>
+            @if (hasError('cep')) {
+              <small>Informe um CEP válido.</small>
+            }
+            @if (shippingError()) {
+              <small>{{ shippingError() }}</small>
             }
           </div>
 
+          <div class="form-row">
+            <label for="endereco">Rua / logradouro</label>
+            <input id="endereco" type="text" formControlName="endereco" placeholder="Rua, avenida ou travessa" />
+            @if (hasError('endereco')) {
+              <small>Informe o endereço.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="numero">Número</label>
+            <input id="numero" type="text" formControlName="numero" placeholder="123" />
+            @if (hasError('numero')) {
+              <small>Informe o número.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="complemento">Complemento</label>
+            <input id="complemento" type="text" formControlName="complemento" placeholder="Apartamento, bloco, referência" />
+          </div>
+
+          <div class="form-row">
+            <label for="bairro">Bairro</label>
+            <input id="bairro" type="text" formControlName="bairro" placeholder="Bairro" />
+            @if (hasError('bairro')) {
+              <small>Informe o bairro.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="cidade">Cidade</label>
+            <input id="cidade" type="text" formControlName="cidade" placeholder="Cidade" />
+            @if (hasError('cidade')) {
+              <small>Informe a cidade.</small>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="estado">UF</label>
+            <input id="estado" type="text" formControlName="estado" placeholder="PA" maxlength="2" />
+            @if (hasError('estado')) {
+              <small>Informe a UF.</small>
+            }
+          </div>
+        </div>
+
+        @if (shippingOptions().length > 0) {
+          <div class="shipping-options">
+            @for (option of shippingOptions(); track option.metodo) {
+              <label class="shipping-option" [class.shipping-option--selected]="selectedShipping()?.metodo === option.metodo">
+                <input
+                  type="radio"
+                  name="shipping"
+                  [value]="option.metodo"
+                  [checked]="selectedShipping()?.metodo === option.metodo"
+                  (change)="selectShipping(option.metodo)"
+                />
+                <span>
+                  <strong>{{ option.nome }}</strong>
+                  <small>{{ option.descricao }}</small>
+                  <small>Prazo: {{ option.prazo }}</small>
+                </span>
+                <b>{{ option.preco | brlCurrency }}</b>
+              </label>
+            }
+          </div>
+        }
+
+        <div class="section-title-inline">
+          <span>3</span>
+          <div>
+            <strong>Pagamento</strong>
+            <small>Escolha uma forma de pagamento simulada.</small>
+          </div>
+        </div>
+
+        <div class="form-grid">
           <div class="form-row">
             <label for="formaPagamento">Forma de pagamento</label>
             <select id="formaPagamento" formControlName="formaPagamento">
@@ -78,9 +181,22 @@
             <small>{{ item.quantidade }} × {{ item.produto.preco | brlCurrency }}</small>
           </div>
         }
+        <div class="price-row">
+          <span>Subtotal</span>
+          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+        </div>
+        <div class="price-row">
+          <span>Frete</span>
+          <strong>{{ (selectedShipping()?.preco ?? 0) | brlCurrency }}</strong>
+        </div>
+        @if (selectedShipping(); as shipping) {
+          <small class="shipping-summary">{{ shipping.nome }} • {{ shipping.prazo }}</small>
+        } @else {
+          <small class="shipping-summary">Consulte o CEP para calcular o frete.</small>
+        }
         <div class="total">
           <span>Total</span>
-          <strong>{{ cartService.totalPrice() | brlCurrency }}</strong>
+          <strong>{{ orderTotal() | brlCurrency }}</strong>
         </div>
       </aside>
     </div>

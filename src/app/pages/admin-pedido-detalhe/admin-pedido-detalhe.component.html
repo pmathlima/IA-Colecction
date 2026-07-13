@@ -51,6 +51,12 @@
           <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
           <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
           <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
+          <p><strong>Entrega:</strong> {{ currentOrder.entrega.nome }}</p>
+          <p><strong>Prazo:</strong> {{ currentOrder.entrega.prazo }}</p>
+          <p><strong>Frete:</strong> {{ currentOrder.entrega.preco | brlCurrency }}</p>
+          @if (currentOrder.entrega.cep) {
+            <p><strong>CEP:</strong> {{ currentOrder.entrega.cep }}</p>
+          }
           <p><strong>Pagamento:</strong> {{ currentOrder.cliente.formaPagamento }}</p>
         </div>
       </article>
@@ -62,7 +68,11 @@
           <span>Produtos</span>
           <h2>Itens do pedido</h2>
         </div>
-        <strong>{{ currentOrder.total | brlCurrency }}</strong>
+        <div class="order-totals">
+          <small>Subtotal: {{ currentOrder.subtotal | brlCurrency }}</small>
+          <small>Frete: {{ currentOrder.entrega.preco | brlCurrency }}</small>
+          <strong>Total: {{ currentOrder.total | brlCurrency }}</strong>
+        </div>
       </div>
 
       <div class="table-wrapper">
