@@ -1,12 +1,12 @@
 export const PRODUCT_CATEGORIES = [
-  'Vestidos',
-  'Blusas',
-  'Conjuntos',
-  'Saias',
-  'Calçados',
-  'Acessórios',
-  'Lançamentos',
-  'Promoções',
+  "Vestidos",
+  "Blusas",
+  "Conjuntos",
+  "Saias",
+  "Calçados",
+  "Acessórios",
+  "Lançamentos",
+  "Promoções",
 ] as const;
 
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
@@ -45,6 +45,6 @@ export interface Product {
 
 export interface ProductFilters {
   termo: string;
-  categoria: ProductCategory | 'Todas';
+  categoria: ProductCategory | "Todas";
   precoMaximo: number;
 }

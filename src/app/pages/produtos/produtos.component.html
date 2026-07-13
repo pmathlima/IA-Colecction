@@ -1,27 +1,103 @@
 <section class="page container">
-  <header class="page-header">
+  <header class="page-header catalog-header">
     <span>Catálogo</span>
+
     <h1>Produtos IA Collection</h1>
-    <p>Pesquise, filtre por categoria e encontre peças femininas elegantes para compor seu visual.</p>
+
+    <p>
+      Pesquise, filtre por categoria e encontre peças femininas elegantes para
+      compor seu visual com sofisticação e conforto.
+    </p>
   </header>
 
-  <app-product-filters
-    [filters]="filters()"
-    [categories]="productService.categories()"
-    [highestPrice]="productService.highestPrice()"
-    (filtersChange)="updateFilters($event)"
-  />
+  <section class="catalog-layout">
+    <aside class="catalog-sidebar glass-card" aria-label="Filtros de produtos">
+      <div class="catalog-sidebar__header">
+        <div>
+          <span>Filtros</span>
+          <strong>Refine sua busca</strong>
+        </div>
 
-  @if (filteredProducts().length > 0) {
-    <div class="products-grid">
-      @for (product of filteredProducts(); track product.id) {
-        <app-product-card [product]="product" />
+        @if (hasActiveFilters()) {
+          <button type="button" class="clear-button" (click)="clearFilters()">
+            Limpar
+          </button>
+        }
+      </div>
+
+      <app-product-filters
+        [filters]="filters()"
+        [categories]="productService.categories()"
+        [highestPrice]="productService.highestPrice()"
+        (filtersChange)="updateFilters($event)"
+      />
+    </aside>
+
+    <div class="catalog-content">
+      <div class="catalog-toolbar glass-card">
+        <div class="catalog-toolbar__info">
+          <strong>
+            {{ visibleProducts().length }}
+            {{
+              visibleProducts().length === 1
+                ? "produto encontrado"
+                : "produtos encontrados"
+            }}
+          </strong>
+
+          <span>
+            @if (hasActiveFilters()) {
+              Resultado dos filtros aplicados
+            } @else {
+              Confira nossas peças disponíveis
+            }
+          </span>
+        </div>
+
+        <label class="sort-control">
+          <span>Ordenar por</span>
+
+          <select [value]="sortOption()" (change)="updateSort($event)">
+            <option value="novidades">Novidades</option>
+            <option value="menor-preco">Menor preço</option>
+            <option value="maior-preco">Maior preço</option>
+            <option value="nome">Nome</option>
+          </select>
+        </label>
+      </div>
+
+      @if (productService.isLoading()) {
+        <div class="empty-state glass-card">
+          <span>Carregando</span>
+          <h2>Buscando produtos</h2>
+          <p>Aguarde enquanto carregamos o catálogo da IA Collection.</p>
+        </div>
+      } @else if (visibleProducts().length > 0) {
+        <div class="products-grid">
+          @for (product of visibleProducts(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+      } @else {
+        <div class="empty-state glass-card">
+          <span>Nenhum resultado</span>
+
+          <h2>Nenhum produto encontrado</h2>
+
+          <p>
+            Altere os filtros, busque por outro nome ou limpe a pesquisa para
+            ver todos os produtos disponíveis.
+          </p>
+
+          <button
+            type="button"
+            class="empty-state__button"
+            (click)="clearFilters()"
+          >
+            Limpar filtros
+          </button>
+        </div>
       }
     </div>
-  } @else {
-    <div class="empty-state glass-card">
-      <h2>Nenhum produto encontrado</h2>
-      <p>Altere os filtros ou busque por outro nome.</p>
-    </div>
-  }
+  </section>
 </section>

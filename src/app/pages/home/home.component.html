@@ -99,7 +99,11 @@
   <div class="category-grid">
     @for (category of featuredCategories; track category.label) {
       <a routerLink="/produtos" class="category-card">
-        <img [src]="category.image" [alt]="category.label" />
+        <img
+          src="{{ category.image }}"
+          alt="{{ category.label }}"
+          title="{{ category.label }}"
+        />
         <strong>{{ category.label }}</strong>
       </a>
     }
