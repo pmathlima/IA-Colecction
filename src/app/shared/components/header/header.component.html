@@ -1,4 +1,10 @@
 <header class="header">
+  <div class="header__promo" aria-label="Informações promocionais da loja">
+    <span>🚚 Frete grátis acima de R$ 299</span>
+    <span>10% OFF na primeira compra | Cupom: BEMVINDA10</span>
+    <span>💬 Atendimento</span>
+  </div>
+
   <div class="container header__content">
     <a class="brand" routerLink="/" aria-label="Ir para a página inicial da IA Collection" (click)="closeMenu()">
       <img class="brand__logo" src="assets/logo-ia-mark.png" alt="Logo IA Collection" />
@@ -23,7 +29,7 @@
       } @else {
         <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Entrar</a>
       }
-      <a routerLink="/admin/produtos" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()">Admin</a>
     </nav>
 
     <a class="cart-link" routerLink="/carrinho" aria-label="Abrir carrinho" (click)="closeMenu()">

@@ -1,57 +1,115 @@
-<section class="hero">
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__ornament hero__ornament--left" aria-hidden="true"></div>
+  <div class="hero__ornament hero__ornament--right" aria-hidden="true"></div>
+
   <div class="container hero__grid">
     <div class="hero__content">
-      <span class="hero__eyebrow">Nova coleção feminina disponível</span>
-      <h1>Moda feminina com elegância, delicadeza e presença.</h1>
+      <span class="hero__eyebrow">Nova coleção feminina</span>
+
+      <h1 id="hero-title">
+        Moda feminina com elegância, delicadeza e presença.
+      </h1>
+
       <p>
-        A IA Collection oferece peças femininas modernas, sofisticadas e versáteis para mulheres que valorizam estilo, conforto e confiança em cada detalhe.
+        Peças modernas, sofisticadas e versáteis para mulheres que valorizam
+        estilo, conforto e confiança em cada detalhe.
       </p>
+
       <div class="hero__actions">
-        <app-ui-button routerLink="/produtos">Conhecer coleção</app-ui-button>
-        <app-ui-button variant="ghost" routerLink="/sobre">Sobre a marca</app-ui-button>
-      </div>
-      <div class="hero__stats">
-        <div><strong>8+</strong><span>peças selecionadas</span></div>
-        <div><strong>100%</strong><span>layout responsivo</span></div>
-        <div><strong>Premium</strong><span>identidade feminina</span></div>
+        <app-ui-button routerLink="/produtos"> Conhecer coleção </app-ui-button>
+
+        <app-ui-button variant="ghost" routerLink="/sobre">
+          Sobre a marca
+        </app-ui-button>
       </div>
     </div>
 
-    <div class="hero__visual glass-card" aria-label="Produto em destaque IA Collection">
-      <img src="assets/products/vestido-aurora.svg" alt="Vestido Aurora Vinho" />
-      <div>
-        <span>Elegância em destaque</span>
-        <strong>Peças pensadas para valorizar sua presença.</strong>
+    <div class="hero__media" aria-hidden="true">
+      <div class="hero__image-frame">
+        <img class="hero__image" src="/assets/home/banner-mulher.jpg" alt="" />
       </div>
     </div>
   </div>
 </section>
 
-<section class="container section">
-  <div class="section__header">
-    <div>
-      <span>Categorias</span>
-      <h2>Escolha seu estilo</h2>
+<section class="benefits" aria-labelledby="benefits-title">
+  <div class="container benefits__panel">
+    <h2 id="benefits-title">Por que escolher a IA Collection?</h2>
+
+    <div class="benefits__grid">
+      @for (benefit of benefits; track benefit.title) {
+        <article class="benefit-card">
+          <span class="benefit-card__icon" aria-hidden="true">
+            @switch (benefit.icon) {
+              @case ("hanger") {
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <path
+                    d="M24 18v-2.5c0-3.2 2.6-5.5 5.5-5.5 2.7 0 5 2 5 4.7 0 2.3-1.3 4-3.5 5.3L24 24"
+                  />
+                  <path d="M6 38l18-14 18 14" />
+                  <path d="M10 38h28" />
+                </svg>
+              }
+
+              @case ("dress") {
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <path d="M18 8h12l2 10 7 20H9l7-20 2-10Z" />
+                  <path d="M18 8c2 4 4 6 6 6s4-2 6-6" />
+                  <path d="M15 38h18" />
+                </svg>
+              }
+
+              @case ("diamond") {
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <path d="M12 12h24l6 9-18 19L6 21l6-9Z" />
+                  <path d="M6 21h36" />
+                  <path d="M18 12l-4 9 10 19 10-19-4-9" />
+                </svg>
+              }
+
+              @default {
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <path d="M9 21h30v20H9V21Z" />
+                  <path d="M7 14h34v7H7v-7Z" />
+                  <path d="M24 14v27" />
+                  <path d="M24 14c-1-5-4-8-8-8-3 0-5 2-5 4 0 4 5 4 13 4Z" />
+                  <path d="M24 14c1-5 4-8 8-8 3 0 5 2 5 4 0 4-5 4-13 4Z" />
+                </svg>
+              }
+            }
+          </span>
+
+          <div>
+            <h3>{{ benefit.title }}</h3>
+            <p>{{ benefit.description }}</p>
+            <a routerLink="/sobre">Saiba mais</a>
+          </div>
+        </article>
+      }
     </div>
-    <a routerLink="/produtos">Ver catálogo completo</a>
+  </div>
+</section>
+
+<section class="container section categories-section">
+  <div class="section__header">
+    <h2>Explore nossas categorias</h2>
+    <a routerLink="/produtos">Ver todas</a>
   </div>
 
   <div class="category-grid">
-    @for (category of productService.categories(); track category) {
+    @for (category of featuredCategories; track category.label) {
       <a routerLink="/produtos" class="category-card">
-        <strong>{{ category }}</strong>
-        <span>Explorar coleção</span>
+        <img [src]="category.image" [alt]="category.label" />
+        <strong>{{ category.label }}</strong>
       </a>
     }
   </div>
 </section>
 
-<section class="container section">
+<section class="container section featured-section">
   <div class="section__header">
-    <div>
-      <span>Destaques</span>
-      <h2>Lançamentos e peças queridinhas</h2>
-    </div>
+    <h2>Peças em destaque</h2>
+    <a routerLink="/produtos">Ver todas</a>
   </div>
 
   <div class="products-grid">
@@ -61,11 +119,21 @@
   </div>
 </section>
 
-<section class="container cta glass-card">
-  <div>
-    <span>IA Collection</span>
-    <h2>Pronta para renovar seu guarda-roupa?</h2>
-    <p>Explore vestidos, blusas, conjuntos, calçados e acessórios com uma experiência simples, elegante e intuitiva.</p>
+<section class="container editorial section">
+  <div class="editorial__content">
+    <span>Novidades da coleção</span>
+
+    <h2>Peças que traduzem feminilidade, presença e sofisticação.</h2>
+
+    <p>
+      Monte produções para diferentes momentos com vestidos, blusas, conjuntos e
+      acessórios selecionados para um visual elegante e atual.
+    </p>
+
+    <app-ui-button routerLink="/produtos"> Ver novidades </app-ui-button>
   </div>
-  <app-ui-button variant="secondary" routerLink="/produtos">Ir para loja</app-ui-button>
+
+  <div class="editorial__visual" aria-hidden="true">
+    <img src="assets/products/vestido-aurora.svg" alt="" />
+  </div>
 </section>
