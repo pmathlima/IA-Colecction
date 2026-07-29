@@ -1,105 +1,296 @@
 <section class="confirmation-page container">
   @if (order(); as currentOrder) {
     <header class="confirmation-hero glass-card">
-      <span>Pedido realizado</span>
-      <h1>Compra recebida com sucesso!</h1>
-      <p>
-        Seu pedido <strong>{{ currentOrder.id }}</strong> foi registrado. Agora você pode confirmar a compra pelo WhatsApp
-        da loja com uma mensagem pronta.
-      </p>
+      <div class="confirmation-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <circle cx="24" cy="24" r="20"></circle>
+          <path d="m15 24 6 6 13-14"></path>
+        </svg>
+      </div>
+
+      <div class="confirmation-hero__content">
+        <span>Pedido realizado</span>
+
+        <h1>Compra recebida com sucesso!</h1>
+
+        <p>
+          Seu pedido <strong>#{{ currentOrder.id }}</strong> foi registrado.
+          Para concluir o atendimento, envie a mensagem de confirmação pelo
+          WhatsApp da IA Collection.
+        </p>
+      </div>
+
+      <div class="order-highlight">
+        <div>
+          <small>Número do pedido</small>
+          <strong>#{{ currentOrder.id }}</strong>
+        </div>
+
+        <div>
+          <small>Status</small>
+          <strong>{{ statusLabels[currentOrder.status] }}</strong>
+        </div>
+
+        <div>
+          <small>Total</small>
+          <strong>{{ currentOrder.total | brlCurrency }}</strong>
+        </div>
+      </div>
 
       <div class="hero-actions">
-        <button class="whatsapp-button" type="button" (click)="confirmOnWhatsapp(currentOrder)">
+        <button
+          class="whatsapp-button"
+          type="button"
+          (click)="confirmOnWhatsapp(currentOrder)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.5 0 .2 5.3.2 11.9c0 2.1.5 4.1 1.6 5.9L0 24l6.4-1.7a11.8 11.8 0 0 0 5.7 1.4h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.1-1.2-6.1-3.5-8.3ZM12.2 21.7h-.1a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.5 4.5-9.9 9.9-9.9a9.8 9.8 0 0 1 7 2.9 9.8 9.8 0 0 1 2.9 7c.1 5.4-4.4 9.8-9.8 9.8Zm5.4-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1a8 8 0 0 1-2.5-1.5 9.5 9.5 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.6l.5-.5.3-.5c.1-.2 0-.4 0-.5-.1-.1-.7-1.7-1-2.3-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z"
+            ></path>
+          </svg>
+
           Confirmar pelo WhatsApp
         </button>
-        <app-ui-button routerLink="/produtos" variant="ghost">Continuar comprando</app-ui-button>
+
         @if (customerAuthService.isAuthenticated()) {
-          <app-ui-button routerLink="/meus-pedidos">Ver meus pedidos</app-ui-button>
+          <app-ui-button routerLink="/meus-pedidos">
+            Ver meus pedidos
+          </app-ui-button>
         }
+
+        <app-ui-button routerLink="/produtos" variant="ghost">
+          Continuar comprando
+        </app-ui-button>
       </div>
     </header>
 
-    <div class="confirmation-layout">
-      <section class="glass-card confirmation-card">
-        <div class="section-title">
-          <span>Resumo</span>
-          <h2>Dados do pedido</h2>
+    <section class="order-progress glass-card" aria-label="Etapas do pedido">
+      <div class="progress-step progress-step--completed">
+        <span>1</span>
+        <div>
+          <strong>Pedido registrado</strong>
+          <small>Recebemos os dados da sua compra.</small>
         </div>
+      </div>
 
-        <div class="info-grid">
-          <div>
-            <small>Status</small>
-            <strong>{{ statusLabels[currentOrder.status] }}</strong>
+      <div class="progress-line"></div>
+
+      <div class="progress-step progress-step--active">
+        <span>2</span>
+        <div>
+          <strong>Confirmar no WhatsApp</strong>
+          <small>Envie a mensagem pronta para a loja.</small>
+        </div>
+      </div>
+
+      <div class="progress-line"></div>
+
+      <div class="progress-step">
+        <span>3</span>
+        <div>
+          <strong>Preparação e entrega</strong>
+          <small>A loja confirmará os próximos passos.</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="confirmation-layout">
+      <main class="confirmation-main">
+        <section class="glass-card confirmation-card">
+          <div class="section-title">
+            <div>
+              <span>Resumo</span>
+              <h2>Dados do pedido</h2>
+            </div>
+
+            <small
+              >Realizado em
+              {{ currentOrder.criadoEm | date: "dd/MM/yyyy HH:mm" }}</small
+            >
           </div>
-          <div>
-            <small>Subtotal</small>
-            <strong>{{ currentOrder.subtotal | brlCurrency }}</strong>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <small>Status</small>
+              <strong class="status-value">
+                {{ statusLabels[currentOrder.status] }}
+              </strong>
+            </div>
+
+            <div class="info-item">
+              <small>Pagamento</small>
+              <strong>{{ currentOrder.cliente.formaPagamento }}</strong>
+            </div>
+
+            <div class="info-item">
+              <small>Subtotal</small>
+              <strong>{{ currentOrder.subtotal | brlCurrency }}</strong>
+            </div>
+
+            <div class="info-item">
+              <small>Frete</small>
+              <strong>{{ currentOrder.entrega.preco | brlCurrency }}</strong>
+            </div>
           </div>
-          <div>
-            <small>Frete</small>
-            <strong>{{ currentOrder.entrega.preco | brlCurrency }}</strong>
-          </div>
-          <div>
-            <small>Total</small>
+
+          <div class="order-total">
+            <span>Total do pedido</span>
             <strong>{{ currentOrder.total | brlCurrency }}</strong>
           </div>
-          <div>
-            <small>Pagamento</small>
-            <strong>{{ currentOrder.cliente.formaPagamento }}</strong>
-          </div>
-          <div>
-            <small>Data</small>
-            <strong>{{ currentOrder.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</strong>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="glass-card confirmation-card">
-        <div class="section-title">
-          <span>Produtos</span>
-          <h2>Itens comprados</h2>
-        </div>
+        <section class="glass-card confirmation-card">
+          <div class="section-title">
+            <div>
+              <span>Produtos</span>
+              <h2>Itens comprados</h2>
+            </div>
 
-        <div class="items-list">
-          @for (item of currentOrder.itens; track item.produtoId) {
-            <article class="item-row">
-              <div>
-                <strong>{{ item.nome }}</strong>
-                @if (item.cor || item.tamanho) {
-                  <small>{{ item.cor }} / {{ item.tamanho }}</small>
+            <small>{{ currentOrder.itens.length }} produto(s)</small>
+          </div>
+
+          <div class="items-list">
+            @for (item of currentOrder.itens; track item.produtoId) {
+              <article class="item-row">
+                <div class="item-row__quantity">{{ item.quantidade }}×</div>
+
+                <div class="item-row__info">
+                  <strong>{{ item.nome }}</strong>
+
+                  @if (item.cor || item.tamanho) {
+                    <small>
+                      @if (item.cor) {
+                        Cor: {{ item.cor }}
+                      }
+
+                      @if (item.cor && item.tamanho) {
+                        •
+                      }
+
+                      @if (item.tamanho) {
+                        Tamanho: {{ item.tamanho }}
+                      }
+                    </small>
+                  }
+
+                  <small>
+                    {{ item.precoUnitario | brlCurrency }} por unidade
+                  </small>
+                </div>
+
+                <strong class="item-row__subtotal">
+                  {{ item.subtotal | brlCurrency }}
+                </strong>
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="glass-card confirmation-card">
+          <div class="section-title">
+            <div>
+              <span>Entrega</span>
+              <h2>Endereço e prazo</h2>
+            </div>
+          </div>
+
+          <div class="delivery-card">
+            <div class="delivery-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" focusable="false">
+                <path d="M6 13h24v23H6z"></path>
+                <path d="M30 21h7l5 7v8H30z"></path>
+                <circle cx="14" cy="37" r="4"></circle>
+                <circle cx="36" cy="37" r="4"></circle>
+              </svg>
+            </div>
+
+            <div>
+              <strong>{{ currentOrder.entrega.nome }}</strong>
+              <p>{{ currentOrder.cliente.endereco }}</p>
+
+              <div class="delivery-details">
+                <span>Prazo: {{ currentOrder.entrega.prazo }}</span>
+
+                @if (currentOrder.entrega.cep) {
+                  <span>CEP: {{ currentOrder.entrega.cep }}</span>
                 }
-                <small>{{ item.quantidade }} × {{ item.precoUnitario | brlCurrency }}</small>
               </div>
-              <span>{{ item.subtotal | brlCurrency }}</span>
-            </article>
-          }
-        </div>
-      </section>
+            </div>
+          </div>
+        </section>
+      </main>
 
-      <section class="glass-card confirmation-card">
-        <div class="section-title">
-          <span>Cliente</span>
-          <h2>Dados de contato e entrega</h2>
-        </div>
+      <aside class="confirmation-sidebar">
+        <section class="glass-card confirmation-card customer-card">
+          <div class="section-title">
+            <div>
+              <span>Cliente</span>
+              <h2>Dados de contato</h2>
+            </div>
+          </div>
 
-        <div class="customer-data">
-          <p><strong>Nome:</strong> {{ currentOrder.cliente.nome }}</p>
-          <p><strong>E-mail:</strong> {{ currentOrder.cliente.email }}</p>
-          <p><strong>Telefone:</strong> {{ currentOrder.cliente.telefone }}</p>
-          <p><strong>Endereço:</strong> {{ currentOrder.cliente.endereco }}</p>
-          <p><strong>Entrega:</strong> {{ currentOrder.entrega.nome }}</p>
-          <p><strong>Prazo:</strong> {{ currentOrder.entrega.prazo }}</p>
-          @if (currentOrder.entrega.cep) {
-            <p><strong>CEP:</strong> {{ currentOrder.entrega.cep }}</p>
-          }
-        </div>
-      </section>
+          <div class="customer-data">
+            <div>
+              <small>Nome</small>
+              <strong>{{ currentOrder.cliente.nome }}</strong>
+            </div>
+
+            <div>
+              <small>E-mail</small>
+              <strong>{{ currentOrder.cliente.email }}</strong>
+            </div>
+
+            <div>
+              <small>Telefone</small>
+              <strong>{{ currentOrder.cliente.telefone }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="next-step-card">
+          <span>Próximo passo</span>
+
+          <h2>Confirme pelo WhatsApp</h2>
+
+          <p>
+            A mensagem será preenchida automaticamente com os produtos, valores,
+            entrega e seus dados de contato.
+          </p>
+
+          <button
+            class="whatsapp-button whatsapp-button--full"
+            type="button"
+            (click)="confirmOnWhatsapp(currentOrder)"
+          >
+            Abrir WhatsApp
+          </button>
+        </section>
+
+        <section class="security-card glass-card">
+          <strong>Compra registrada com segurança</strong>
+
+          <ul>
+            <li>Pedido salvo no sistema</li>
+            <li>Valores e entrega registrados</li>
+            <li>Confirmação direta com a loja</li>
+          </ul>
+        </section>
+      </aside>
     </div>
   } @else {
     <div class="glass-card empty-state">
-      <h1>Nenhum pedido recente encontrado</h1>
-      <p>Finalize uma compra para visualizar a confirmação do pedido e enviar a mensagem pelo WhatsApp.</p>
-      <app-ui-button routerLink="/produtos">Ver produtos</app-ui-button>
+      <div class="empty-state__icon" aria-hidden="true">!</div>
+
+      <span>Nenhum pedido recente</span>
+
+      <h1>Nenhum pedido encontrado</h1>
+
+      <p>
+        Finalize uma compra para visualizar a confirmação e enviar os dados do
+        pedido pelo WhatsApp.
+      </p>
+
+      <app-ui-button routerLink="/produtos"> Ver produtos </app-ui-button>
     </div>
   }
 </section>
